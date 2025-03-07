@@ -1,8 +1,45 @@
 import React from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { PageHeader } from '@/components/PageHeader';
+import { CategoryCard } from '@/components/CategoryCard';
+import { router } from 'expo-router';
+
+const categories = [
+  {
+    id: 1,
+    name: '彩妆',
+    count: 8,
+    colors: ['#FFB6C1', '#FF69B4'],
+    icon: 'palette',
+  },
+  {
+    id: 2,
+    name: '护肤',
+    count: 12,
+    colors: ['#E6E6FA', '#9370DB'],
+    icon: 'spa',
+  },
+  {
+    id: 3,
+    name: '香水',
+    count: 3,
+    colors: ['#98FB98', '#3CB371'],
+    icon: 'opacity',
+  },
+  {
+    id: 4,
+    name: '工具',
+    count: 5,
+    colors: ['#87CEEB', '#4169E1'],
+    icon: 'brush',
+  }
+];
 
 export default function VanityTableScreen() {
+  const handleCategoryPress = (categoryId: number) => {
+    router.push(`/category/${categoryId}`);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <PageHeader 
@@ -10,7 +47,18 @@ export default function VanityTableScreen() {
         subtitle="共收录28件产品" 
       />
       <View style={styles.content}>
-        {/* 这里可以添加新的内容 */}
+        <View style={styles.categoryGrid}>
+          {categories.map((category) => (
+            <CategoryCard
+              key={category.id}
+              name={category.name}
+              count={category.count}
+              colors={category.colors}
+              icon={category.icon}
+              onPress={() => handleCategoryPress(category.id)}
+            />
+          ))}
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -23,6 +71,11 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 20,
-  }
+    padding: 15,
+  },
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
 }); 
