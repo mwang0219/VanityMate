@@ -41,7 +41,7 @@ export function RegisterForm() {
       setErrorMessage('');
       await signUp(email, password, username);
       await new Promise(resolve => setTimeout(resolve, 1000));
-      router.replace('/(tabs)');
+      router.replace('/(tabs)/vanity-table');
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);

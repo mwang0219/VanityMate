@@ -1,21 +1,21 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet, View, ActivityIndicator } from 'react-native';
+import { Platform, StyleSheet, View, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { FontAwesome } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { router } from 'expo-router';
 
 import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
 
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof MaterialIcons>['name'];
   color: string;
+  size?: number;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return <MaterialIcons size={props.size || 24} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
@@ -36,40 +36,106 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      initialRouteName="vanity-table"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: '#FF6B6B',
+        tabBarInactiveTintColor: '#687076',
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: () => (
-          <BlurView
-            tint={colorScheme === 'dark' ? 'dark' : 'light'}
-            intensity={100}
-            style={StyleSheet.absoluteFill}
-          />
-        ),
-        tabBarStyle: { borderTopWidth: 0 },
+        tabBarStyle: {
+          borderTopWidth: 0,
+          height: 60,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        },
+        tabBarItemStyle: {
+          paddingVertical: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+        },
       }}>
       <Tabs.Screen
-        name="market"
+        name="index"
         options={{
-          title: '商场',
-          tabBarIcon: ({ color }) => <TabBarIcon name="shopping-bag" color={color} />,
+          href: null,
         }}
       />
       <Tabs.Screen
         name="vanity-table"
         options={{
           title: '美妆桌',
-          tabBarIcon: ({ color }) => <TabBarIcon name="heart" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon 
+              name="grid-on"
+              color={color}
+              size={28}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="scan"
+        options={{
+          title: '',
+          tabBarIcon: ({ color }) => (
+            <View style={styles.scanButton}>
+              <TabBarIcon 
+                name="qr-code-scanner" 
+                color="#FFFFFF"
+                size={32}
+              />
+            </View>
+          ),
+          tabBarButton: (props) => (
+            <TouchableOpacity
+              style={styles.scanButtonContainer}
+              onPress={() => {
+                router.push('/(tabs)/scan');
+              }}
+            >
+              {props.children}
+            </TouchableOpacity>
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: '我的',
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon 
+              name={focused ? "person" : "person-outline"} 
+              color={color}
+              size={28}
+            />
+          ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  scanButtonContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scanButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#FF6B6B',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 32,
+    shadowColor: '#FF6B6B',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+});
