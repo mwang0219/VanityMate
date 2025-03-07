@@ -29,10 +29,12 @@ export interface UserProduct {
 }
 
 export enum ProductCategory {
-  MAKEUP = 1,
-  SKINCARE = 2,
-  FRAGRANCE = 3,
-  TOOLS = 4,
+  BASE = 'BASE',
+  EYE = 'EYE',
+  LIP = 'LIP',
+  SKINCARE = 'SKINCARE',
+  FRAGRANCE = 'FRAGRANCE',
+  TOOLS = 'TOOLS',
 }
 
 export enum ProductStatus {
