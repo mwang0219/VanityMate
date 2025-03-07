@@ -33,6 +33,11 @@ export default function LoginForm() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.logoSection}>
+        <Text style={styles.logoTitle}>VanityMate</Text>
+        <Text style={styles.logoSubtitle}>您的智能美妆助手</Text>
+      </View>
+      
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
           <MaterialIcons name="email" size={20} color="#999999" style={styles.inputIcon} />
@@ -93,6 +98,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
+  },
+  logoSection: {
+    alignItems: 'center',
+    marginBottom: 30,
+    marginTop: 100,
+  },
+  logoTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 8,
+  },
+  logoSubtitle: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    opacity: 0.9,
   },
   formContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
