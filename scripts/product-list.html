@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <title>VanityMate - 产品列表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .screen {
+            background: white;
+            border-radius: 40px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            width: 375px;
+            margin: 0 auto;
+        }
+
+        .phone-frame {
+            background: white;
+            border-radius: 40px;
+            padding: 15px;
+            box-shadow: 0 0 0 2px #e1e1e1;
+            aspect-ratio: 9/19.5;
+            position: relative;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .product-list-screen {
+            background: #fff;
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .list-header {
+            background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);
+            padding: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-button, .view-toggle {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .filter-section {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .dropdown-filter {
+            flex: 1;
+            position: relative;
+            min-width: 0;
+        }
+
+        .selected-option {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.85em;
+            color: #2D4059;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 32px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .selected-option .material-icons-round {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            margin-top: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: none;
+        }
+
+        .dropdown-filter:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 15px;
+            font-size: 0.9em;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-item.active {
+            color: #FF6B6B;
+            background: #FFF0F0;
+        }
+
+        .sort-toggle {
+            width: 32px;
+            height: 32px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .sort-toggle .material-icons-round {
+            font-size: 18px;
+            color: #2D4059;
+        }
+
+        .status-tags {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .status-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .dot.new { background: #4CAF50; }
+        .dot.using { background: #2196F3; }
+        .dot.finished { background: #9E9E9E; }
+
+        .product-list {
+            padding: 15px;
+            overflow-y: auto;
+            height: calc(100% - 180px);
+        }
+
+        .product-list-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-content {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+            background: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .product-list-item:active .product-content {
+            transform: translateX(-80px);
+        }
+
+        .action-buttons {
+            position: absolute;
+            right: -80px;
+            top: 0;
+            height: 100%;
+            display: flex;
+            align-items: stretch;
+            width: 80px;
+        }
+
+        .product-list-item:active .action-buttons {
+            right: 0;
+        }
+
+        .action-button {
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .delete-button {
+            background: #FF5252;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .product-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-brand {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .product-name {
+            font-size: 1.1em;
+            color: #2D4059;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .product-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8em;
+        }
+
+        .purchase-date {
+            color: #666;
+        }
+
+        .expiry-status {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .expiry-status.safe {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .expiry-status.warning {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .expiry-status.expired {
+            background: #FFEBEE;
+            color: #F44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="screen">
+            <div class="phone-frame">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <span>VanityMate</span>
+                    <span>🔋</span>
+                </div>
+                <div class="product-list-screen">
+                    <div class="list-header">
+                        <div class="back-button">
+                            <span class="material-icons-round">arrow_back</span>
+                        </div>
+                        <h2>彩妆产品</h2>
+                        <div class="view-toggle">
+                            <span class="material-icons-round">grid_view</span>
+                        </div>
+                    </div>
+                    <div class="filter-section">
+                        <div class="filter-row">
+                            <div class="dropdown-filter">
+                                <div class="selected-option">
+                                    <span class="material-icons-round">sort</span>
+                                    购入时间
+                                    <span class="material-icons-round">expand_more</span>
+                                </div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item active">购入时间</div>
+                                    <div class="dropdown-item">过期时间</div>
+                                    <div class="dropdown-item">使用频率</div>
+                                    <div class="dropdown-item">价格</div>
+                                </div>
+                            </div>
+                            <div class="dropdown-filter">
+                                <div class="selected-option">
+                                    <span class="material-icons-round">category</span>
+                                    全部类型
+                                    <span class="material-icons-round">expand_more</span>
+                                </div>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item active">全部类型</div>
+                                    <div class="dropdown-item">唇部彩妆</div>
+                                    <div class="dropdown-item">眼部彩妆</div>
+                                    <div class="dropdown-item">面部彩妆</div>
+                                </div>
+                            </div>
+                            <div class="sort-toggle">
+                                <span class="material-icons-round">arrow_downward</span>
+                            </div>
+                        </div>
+                        <div class="status-tags">
+                            <div class="status-tag">
+                                <span class="dot new"></span>
+                                未开封
+                            </div>
+                            <div class="status-tag">
+                                <span class="dot using"></span>
+                                使用中
+                            </div>
+                            <div class="status-tag">
+                                <span class="dot finished"></span>
+                                已用完
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-list">
+                        <div class="product-list-item">
+                            <div class="product-content">
+                                <div class="product-image">
+                                    <img src="#" alt="YSL口红">
+                                    <div class="status-indicator new"></div>
+                                </div>
+                                <div class="product-details">
+                                    <div class="product-brand">YSL</div>
+                                    <div class="product-name">小金条唇膏</div>
+                                    <div class="product-meta">
+                                        <span class="purchase-date">购入：2024-02-01</span>
+                                        <span class="expiry-status safe">保质期：12个月</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <div class="action-button delete-button">删除</div>
+                            </div>
+                        </div>
+                        <div class="product-list-item">
+                            <div class="product-content">
+                                <div class="product-image">
+                                    <img src="#" alt="MAC口红">
+                                    <div class="status-indicator using"></div>
+                                </div>
+                                <div class="product-details">
+                                    <div class="product-brand">MAC</div>
+                                    <div class="product-name">水漾唇釉</div>
+                                    <div class="product-meta">
+                                        <span class="purchase-date">购入：2023-12-15</span>
+                                        <span class="expiry-status warning">保质期：剩余2个月</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <div class="action-button delete-button">删除</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
