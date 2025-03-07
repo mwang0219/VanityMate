@@ -39,19 +39,30 @@ export default function TabLayout() {
       initialRouteName="vanity-table"
       screenOptions={{
         tabBarActiveTintColor: '#FF6B6B',
-        tabBarInactiveTintColor: '#687076',
+        tabBarInactiveTintColor: '#999999',
         headerShown: false,
         tabBarStyle: {
           borderTopWidth: 0,
-          height: 60,
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          height: 49,
+          backgroundColor: '#FFFFFF',
         },
         tabBarItemStyle: {
-          paddingVertical: 8,
+          height: 49,
+          paddingTop: 0,
+          paddingBottom: 0,
+          alignItems: 'center',
+          justifyContent: 'center',
+          flex: 1,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '500',
+          fontSize: 14,
+          fontWeight: '400',
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          height: 49,
+          lineHeight: 49,
+          textAlignVertical: 'center',
         },
       }}>
       <Tabs.Screen
@@ -64,13 +75,7 @@ export default function TabLayout() {
         name="vanity-table"
         options={{
           title: '美妆桌',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon 
-              name="grid-on"
-              color={color}
-              size={28}
-            />
-          ),
+          tabBarIcon: () => null,
         }}
       />
       <Tabs.Screen
@@ -102,13 +107,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: '我的',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon 
-              name={focused ? "person" : "person-outline"} 
-              color={color}
-              size={28}
-            />
-          ),
+          tabBarIcon: () => null,
         }}
       />
     </Tabs>
