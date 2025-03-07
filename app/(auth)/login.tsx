@@ -1,24 +1,51 @@
-import { View, SafeAreaView, StatusBar } from 'react-native';
-import { LoginForm } from '@/components/auth/LoginForm';
-import { ThemedText } from '@/components/ThemedText';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
+import LoginForm from '@/components/auth/LoginForm';
 
 export default function LoginScreen() {
+  const router = useRouter();
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F5' }}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F5F5F5" />
-      <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 20 }}>
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <View style={{ marginBottom: 32 }}>
-            <ThemedText type="title" style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 }}>
-              VanityMate
-            </ThemedText>
-            <ThemedText style={{ fontSize: 16, textAlign: 'center', color: '#666666' }}>
-              您的智能美妆助手
-            </ThemedText>
-          </View>
-          <LoginForm />
+    <LinearGradient
+      colors={['#FEE5E5', '#FFD4D4', '#FFC0C0']}
+      locations={[0, 0.5, 1]}
+      style={styles.container}
+    >
+      <StatusBar barStyle="dark-content" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+      >
+        <View style={styles.logoContainer}>
+          <Text style={styles.title}>VanityMate</Text>
+          <Text style={styles.subtitle}>您的智能美妆助手</Text>
         </View>
-      </View>
-    </SafeAreaView>
+        <LoginForm />
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: '100%',
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginTop: 100,
+    marginBottom: 50,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#FF6B6B',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666666',
+  },
+}); 

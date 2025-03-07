@@ -1,109 +1,157 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
-import { useAuthContext } from '@/contexts/AuthContext';
-import { router } from 'expo-router';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useAuth } from '@/hooks/useAuth';
 
-export function LoginForm() {
+export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  
-  const { signIn } = useAuthContext();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+  const { signIn } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setErrorMessage('请填写邮箱和密码');
+      setError('请输入邮箱和密码');
       return;
     }
-
+    
+    setLoading(true);
+    setError('');
+    
     try {
-      setIsLoading(true);
-      setErrorMessage('');
       await signIn(email, password);
-      router.replace('/');
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage('登录失败，请稍后重试');
-      }
-      console.error('登录错误:', error);
+      router.replace('/(tabs)');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '登录失败，请重试');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      {errorMessage ? (
-        <Text style={styles.error}>{errorMessage}</Text>
-      ) : null}
-      
-      <TextInput
-        style={styles.input}
-        placeholder="📧 邮箱"
-        placeholderTextColor="#666666"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        editable={!isLoading}
-      />
+      <View style={styles.formContainer}>
+        <View style={styles.inputContainer}>
+          <MaterialIcons name="email" size={20} color="#999999" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="邮箱"
+            placeholderTextColor="#999999"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+          />
+        </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="🔒 密码"
-        placeholderTextColor="#666666"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        editable={!isLoading}
-      />
+        <View style={styles.inputContainer}>
+          <MaterialIcons name="lock" size={20} color="#999999" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="密码"
+            placeholderTextColor="#999999"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+        </View>
 
-      <TouchableOpacity
-        style={[styles.button, isLoading && styles.buttonDisabled]}
-        onPress={handleLogin}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={styles.buttonText}>登录</Text>
-        )}
-      </TouchableOpacity>
+        {error ? (
+          <View style={styles.errorContainer}>
+            <MaterialIcons name="error" size={16} color="#FF6B6B" />
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : null}
 
-      <TouchableOpacity 
-        onPress={() => router.push('/register')}
-        disabled={isLoading}
-        style={styles.linkContainer}
-      >
-        <Text style={styles.link}>还没有账号？立即注册</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.buttonText}>登录</Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.registerLink}
+          onPress={() => router.push('/register')}
+        >
+          <Text style={styles.registerText}>还没有账号？立即注册</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  formContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 20,
+    padding: 20,
     width: '100%',
   },
-  input: {
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 12,
     marginBottom: 16,
+    paddingHorizontal: 12,
+    height: 50,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  inputIcon: {
+    marginRight: 8,
+  },
+  input: {
+    flex: 1,
+    color: '#333333',
     fontSize: 16,
-    width: '100%',
-    height: 48,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFE5E5',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#FF6B6B',
+    marginLeft: 8,
+    fontSize: 14,
   },
   button: {
     backgroundColor: '#FF6B6B',
-    borderRadius: 8,
-    padding: 16,
+    borderRadius: 12,
+    height: 50,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
-    width: '100%',
+    shadowColor: '#FF6B6B',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   buttonDisabled: {
     opacity: 0.7,
@@ -111,19 +159,14 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
-  error: {
-    color: '#FF6B6B',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  linkContainer: {
+  registerLink: {
     marginTop: 16,
+    alignItems: 'center',
   },
-  link: {
-    color: '#FF6B6B',
-    textAlign: 'center',
-    fontSize: 16,
+  registerText: {
+    color: '#666666',
+    fontSize: 14,
   },
 }); 

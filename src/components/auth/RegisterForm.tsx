@@ -55,49 +55,59 @@ export function RegisterForm() {
   return (
     <View style={styles.container}>
       {errorMessage ? (
-        <Text style={styles.error}>{errorMessage}</Text>
+        <View style={styles.errorContainer}>
+          <Text style={styles.error}>{errorMessage}</Text>
+        </View>
       ) : null}
       
-      <TextInput
-        style={styles.input}
-        placeholder="👤 用户名"
-        placeholderTextColor="#666666"
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-        editable={!isLoading}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="👤 用户名"
+          placeholderTextColor="#999999"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+          editable={!isLoading}
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="📧 邮箱"
-        placeholderTextColor="#666666"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        editable={!isLoading}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="📧 邮箱"
+          placeholderTextColor="#999999"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          editable={!isLoading}
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="🔒 密码"
-        placeholderTextColor="#666666"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        editable={!isLoading}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="🔒 密码"
+          placeholderTextColor="#999999"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          editable={!isLoading}
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="🔒 确认密码"
-        placeholderTextColor="#666666"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-        editable={!isLoading}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="🔒 确认密码"
+          placeholderTextColor="#999999"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+          editable={!isLoading}
+        />
+      </View>
 
       <TouchableOpacity
         style={[styles.button, isLoading && styles.buttonDisabled]}
@@ -126,42 +136,69 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
   },
-  input: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    padding: 12,
+  errorContainer: {
+    backgroundColor: '#FFE5E5',
+    borderRadius: 12,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#FF6B6B',
+  },
+  inputContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#FFB6C1',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  input: {
+    height: 52,
+    paddingHorizontal: 16,
     fontSize: 16,
-    width: '100%',
-    height: 48,
+    color: '#333333',
   },
   button: {
     backgroundColor: '#FF6B6B',
-    borderRadius: 8,
-    padding: 16,
+    borderRadius: 12,
+    height: 52,
     alignItems: 'center',
-    marginTop: 16,
-    width: '100%',
+    justifyContent: 'center',
+    marginTop: 8,
+    shadowColor: '#FF6B6B',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
   buttonDisabled: {
     opacity: 0.7,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: 'bold',
   },
   error: {
     color: '#FF6B6B',
     textAlign: 'center',
-    marginBottom: 16,
+    padding: 12,
+    fontSize: 14,
   },
   linkContainer: {
     marginTop: 16,
+    alignItems: 'center',
   },
   link: {
     color: '#FF6B6B',
-    textAlign: 'center',
     fontSize: 16,
+    fontWeight: '500',
   },
 }); 
