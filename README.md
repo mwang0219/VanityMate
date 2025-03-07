@@ -1,50 +1,114 @@
-# Welcome to your Expo app 👋
+# VanityMate - 智能美妆管理助手
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+VanityMate 是一款专为美妆爱好者设计的智能管理应用。它帮助用户轻松管理所有美妆产品，追踪使用期限，并提供智能分类和管理功能。
 
-## Get started
+## 主要功能
 
-1. Install dependencies
+- 🎨 **智能分类管理**
+  - 彩妆、护肤、香水、工具等多种分类
+  - 直观的网格布局展示
+  - 每个分类的产品数量统计
+
+- 📱 **产品管理**
+  - 产品详细信息记录
+  - 保质期追踪
+  - 使用状态管理（未开封/使用中/已用完）
+  - 购入日期记录
+
+- 🔍 **智能筛选**
+  - 多维度排序（购入时间/过期时间/使用频率/价格）
+  - 类型筛选
+  - 状态标签过滤
+
+- 💅 **用户友好界面**
+  - 现代化 UI 设计
+  - 流畅的动画效果
+  - 直观的操作方式
+
+## 技术栈
+
+- React Native / Expo
+- TypeScript
+- Supabase (后端服务)
+- TailwindCSS (样式管理)
+- Expo Router (导航)
+
+## 本地开发设置
+
+### 前提条件
+
+- Node.js (推荐 v18+)
+- npm 或 yarn
+- Expo CLI
+- iOS 模拟器 (用于 iOS 开发)
+- Android Studio (用于 Android 开发)
+
+### 安装步骤
+
+1. 克隆仓库
+
+   ```bash
+   git clone https://github.com/yourusername/vanitymate.git
+   cd vanitymate
+   ```
+
+2. 安装依赖
 
    ```bash
    npm install
+   # 或
+   yarn install
    ```
 
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+3. 配置环境变量
+创建 `.env` 文件并添加以下配置：
 
 ```bash
-npm run reset-project
+EXPO_PUBLIC_SUPABASE_URL=你的_SUPABASE_URL
+EXPO_PUBLIC_SUPABASE_ANON_KEY=你的_SUPABASE_ANON_KEY
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Supabase 设置
 
-## Learn more
+1. 创建 Supabase 项目
+   - 访问 [Supabase](https://supabase.com)
+   - 创建新项目
+   - 复制项目 URL 和 anon key
 
-To learn more about developing your project with Expo, look at the following resources:
+2. 数据库表结构设置
+   - 在 `scripts/database.sql` 文件中包含了所有必要的数据库表结构
+   - 将文件中的 SQL 语句复制到 Supabase SQL 编辑器中执行
+   - 确保所有表都已成功创建并且没有错误
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 运行项目
 
-## Join the community
+1. 启动开发服务器
 
-Join our community of developers creating universal apps.
+   ```bash
+   npm start
+   # 或
+   yarn start
+   ```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+2. 选择运行平台
+- 按 `i` 运行 iOS 模拟器
+- 按 `a` 运行 Android 模拟器
+- 按 `w` 运行 Web 版本
+
+## 部署
+
+本项目使用 Vercel 进行部署。确保在 Vercel 项目设置中添加必要的环境变量。
+
+## 设计资源
+
+设计文件位于 `scripts` 目录下：
+- `product-list.html`: 产品列表页面设计
+- 其他设计文件...
+
+## 贡献
+
+欢迎提交 Pull Requests 和 Issues。
+
+## 许可证
+
+[MIT License](LICENSE)
