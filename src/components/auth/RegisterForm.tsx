@@ -3,32 +3,50 @@ import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet 
 import { useAuthContext } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
 
-export function LoginForm() {
+export function RegisterForm() {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   
-  const { signIn } = useAuthContext();
+  const { signUp } = useAuthContext();
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      setErrorMessage('请填写邮箱和密码');
+  const handleRegister = async () => {
+    if (!username.trim()) {
+      setErrorMessage('请输入用户名');
+      return;
+    }
+    if (!email.trim()) {
+      setErrorMessage('请输入邮箱');
+      return;
+    }
+    if (!password) {
+      setErrorMessage('请输入密码');
+      return;
+    }
+    if (password.length < 6) {
+      setErrorMessage('密码长度至少为6位');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setErrorMessage('两次输入的密码不一致');
       return;
     }
 
     try {
       setIsLoading(true);
       setErrorMessage('');
-      await signIn(email, password);
+      await signUp(email, password, username);
       router.replace('/');
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage('登录失败，请稍后重试');
+        setErrorMessage('注册失败，请稍后重试');
       }
-      console.error('登录错误:', error);
+      console.error('注册错误:', error);
     } finally {
       setIsLoading(false);
     }
@@ -40,6 +58,16 @@ export function LoginForm() {
         <Text style={styles.error}>{errorMessage}</Text>
       ) : null}
       
+      <TextInput
+        style={styles.input}
+        placeholder="👤 用户名"
+        placeholderTextColor="#666666"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+        editable={!isLoading}
+      />
+
       <TextInput
         style={styles.input}
         placeholder="📧 邮箱"
@@ -61,24 +89,34 @@ export function LoginForm() {
         editable={!isLoading}
       />
 
+      <TextInput
+        style={styles.input}
+        placeholder="🔒 确认密码"
+        placeholderTextColor="#666666"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        secureTextEntry
+        editable={!isLoading}
+      />
+
       <TouchableOpacity
         style={[styles.button, isLoading && styles.buttonDisabled]}
-        onPress={handleLogin}
+        onPress={handleRegister}
         disabled={isLoading}
       >
         {isLoading ? (
           <ActivityIndicator color="white" />
         ) : (
-          <Text style={styles.buttonText}>登录</Text>
+          <Text style={styles.buttonText}>注册</Text>
         )}
       </TouchableOpacity>
 
       <TouchableOpacity 
-        onPress={() => router.push('/register')}
+        onPress={() => router.push('/login')}
         disabled={isLoading}
         style={styles.linkContainer}
       >
-        <Text style={styles.link}>还没有账号？立即注册</Text>
+        <Text style={styles.link}>已有账号？立即登录</Text>
       </TouchableOpacity>
     </View>
   );
