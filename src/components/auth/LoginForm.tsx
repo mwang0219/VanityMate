@@ -23,6 +23,8 @@ export default function LoginForm() {
     
     try {
       await signIn(email, password);
+      // 等待用户状态初始化
+      await new Promise(resolve => setTimeout(resolve, 1000));
       router.replace('/(tabs)');
     } catch (err) {
       setError(err instanceof Error ? err.message : '登录失败，请重试');
