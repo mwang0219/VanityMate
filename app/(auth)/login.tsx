@@ -8,8 +8,10 @@ export default function LoginScreen() {
 
   return (
     <LinearGradient
-      colors={['#FEE5E5', '#FFD4D4', '#FFC0C0']}
-      locations={[0, 0.5, 1]}
+      colors={['#FFC0C0', '#FFD4D4', '#FEE5E5']}
+      locations={[0, 0.4, 1]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={styles.container}
     >
       <StatusBar barStyle="dark-content" />

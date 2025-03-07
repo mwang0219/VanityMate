@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Session, User } from '@supabase/supabase-js';
 
@@ -6,6 +6,7 @@ export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const lastEventRef = useRef<string | null>(null);
 
   useEffect(() => {
     // 获取当前会话
@@ -29,7 +30,13 @@ export function useAuth() {
 
     // 监听认证状态变化
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('认证状态变化:', event, session?.user?.email);
+      // 只在状态真正发生变化时才打印日志
+      if (event !== lastEventRef.current) {
+        if (event !== 'INITIAL_SESSION') {
+          console.log('认证状态变化:', event, session?.user?.email);
+        }
+        lastEventRef.current = event;
+      }
       setSession(session);
       setLoading(false);
     });
