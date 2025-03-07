@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { PageHeader } from '@/components/PageHeader';
 import { CategoryCard } from '@/components/CategoryCard';
+import { AllProductsCard } from '@/components/AllProductsCard';
 import { router } from 'expo-router';
 
 const categories = [
@@ -40,11 +41,17 @@ export default function VanityTableScreen() {
     router.push(`/category/${categoryId}`);
   };
 
+  const handleAllProductsPress = () => {
+    router.push('/(tabs)/products');
+  };
+
+  const totalProducts = categories.reduce((sum, category) => sum + category.count, 0);
+
   return (
     <SafeAreaView style={styles.container}>
       <PageHeader 
         title="我的美妆桌" 
-        subtitle="共收录28件产品" 
+        subtitle={`共收录${totalProducts}件产品`} 
       />
       <View style={styles.content}>
         <View style={styles.categoryGrid}>
@@ -59,6 +66,10 @@ export default function VanityTableScreen() {
             />
           ))}
         </View>
+        <AllProductsCard
+          count={totalProducts}
+          onPress={handleAllProductsPress}
+        />
       </View>
     </SafeAreaView>
   );
