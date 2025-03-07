@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <title>VanityMate - UI设计</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #2D4059;
+        }
+
+        .screens-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .screen {
+            background: white;
+            border-radius: 40px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen-header {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #2D4059;
+            font-size: 0.9rem;
+        }
+
+        .phone-frame {
+            background: white;
+            border-radius: 40px;
+            padding: 15px;
+            box-shadow: 0 0 0 2px #e1e1e1;
+            aspect-ratio: 9/19.5;
+            position: relative;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* 首页样式 */
+        .home-screen {
+            background: #fff;
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .home-header {
+            background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);
+            padding: 20px;
+            color: white;
+        }
+
+        .scan-button {
+            background: #FF6B6B;
+            color: white;
+            padding: 15px;
+            border-radius: 25px;
+            text-align: center;
+            margin: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(255,107,107,0.3);
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .category-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        /* 扫描页面样式 */
+        .scan-screen {
+            background: #000;
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            position: relative;
+        }
+
+        .scan-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 40%;
+            border: 2px solid #FF6B6B;
+            border-radius: 10px;
+        }
+
+        /* 产品详情页样式 */
+        .product-screen {
+            background: #fff;
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .product-image {
+            height: 40%;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #2D4059;
+        }
+
+        .expiry-date {
+            background: #FFE66D;
+            color: #2D4059;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        /* 会员页面样式 */
+        .premium-screen {
+            background: linear-gradient(135deg, #2D4059 0%, #4A4A4A 100%);
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            color: white;
+            padding: 20px;
+        }
+
+        .premium-header {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .premium-feature {
+            background: rgba(255,255,255,0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        /* 新增页面样式 */
+        /* 登录注册页面样式 */
+        .auth-screen {
+            background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .auth-form {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .auth-button {
+            background: #FF6B6B;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* AI试妆页面样式 */
+        .ar-screen {
+            background: #fff;
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .camera-view {
+            height: 70%;
+            background: #000;
+            position: relative;
+        }
+
+        .face-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: white;
+        }
+
+        .makeup-controls {
+            padding: 15px;
+        }
+
+        .makeup-category {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .makeup-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 10px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .makeup-item.active {
+            background: #FF6B6B;
+            color: white;
+        }
+
+        /* 教程页面样式 */
+        .tutorial-screen {
+            background: #fff;
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .tutorial-video {
+            height: 40%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .tutorial-info {
+            padding: 20px;
+        }
+
+        .tutorial-steps {
+            margin-top: 15px;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .step-number {
+            background: #FF6B6B;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+        }
+
+        /* 添加推荐产品样式 */
+        .recommendations {
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .recommendations-title {
+            font-size: 1em;
+            color: #2D4059;
+            margin-bottom: 10px;
+        }
+
+        .recommendations-scroll {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 5px 0;
+            scrollbar-width: none; /* 隐藏滚动条 */
+        }
+
+        .recommendations-scroll::-webkit-scrollbar {
+            display: none; /* 隐藏滚动条 */
+        }
+
+        .recommendation-item {
+            min-width: 100px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .recommendation-image {
+            height: 100px;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 0.8em;
+        }
+
+        .recommendation-info {
+            padding: 8px;
+        }
+
+        .recommendation-name {
+            font-size: 0.8em;
+            color: #2D4059;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .recommendation-price {
+            font-size: 0.9em;
+            color: #FF6B6B;
+            font-weight: 600;
+        }
+
+        /* 新增Market首页样式 */
+        .market-screen {
+            background: #fff;
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            overflow-y: auto;
+        }
+
+        .market-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);
+            color: white;
+        }
+
+        .search-bar {
+            background: rgba(255,255,255,0.9);
+            margin: 15px 0 5px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .trending-section {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            color: #2D4059;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title span {
+            color: #FF6B6B;
+            font-size: 0.8em;
+        }
+
+        .trending-scroll {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 5px 0;
+            margin: 0 -20px;
+            padding: 0 20px;
+            scrollbar-width: none;
+        }
+
+        .trending-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .trending-item {
+            min-width: 150px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .trending-image {
+            height: 150px;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .trending-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #FF6B6B;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.7em;
+        }
+
+        .trending-info {
+            padding: 12px;
+        }
+
+        .trending-brand {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .trending-name {
+            font-size: 0.9em;
+            color: #2D4059;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .trending-price {
+            color: #FF6B6B;
+            font-weight: 600;
+        }
+
+        .my-products {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 20px 20px 0 0;
+            margin-top: 20px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .mini-product {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .mini-product-image {
+            height: 70px;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            color: #666;
+        }
+
+        /* 优化管理页面样式 */
+        .manage-screen {
+            background: #fff;
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .manage-header {
+            background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .manage-header h2 {
+            font-size: 1.5em;
+            margin-bottom: 8px;
+        }
+
+        .category-section {
+            padding: 15px;
+            height: calc(100% - 100px);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 0;
+        }
+
+        .category-item {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .category-item:nth-child(1) {
+            background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+        }
+
+        .category-item:nth-child(2) {
+            background: linear-gradient(135deg, #E6E6FA 0%, #9370DB 100%);
+        }
+
+        .category-item:nth-child(3) {
+            background: linear-gradient(135deg, #98FB98 0%, #3CB371 100%);
+        }
+
+        .category-item:nth-child(4) {
+            background: linear-gradient(135deg, #87CEEB 0%, #4169E1 100%);
+        }
+
+        .category-item:hover {
+            transform: scale(1.02);
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .category-icon .material-icons-round {
+            font-size: 32px;
+            color: white;
+        }
+
+        .category-info {
+            text-align: center;
+            color: white;
+        }
+
+        .category-name {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: white;
+        }
+
+        .category-count {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 添加装饰元素 */
+        .category-item::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -20%;
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .category-item::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            left: -10%;
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        /* 修改底部导航栏样式 */
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 15px;
+            border-top: 1px solid #eee;
+            height: 65px;
+        }
+
+        .tab-item {
+            text-align: center;
+            font-size: 0.8em;
+            color: #666;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .tab-item.active {
+            color: #FF6B6B;
+        }
+
+        .scan-button-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            flex: 1;
+        }
+
+        .scan-button-large {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            box-shadow: 0 2px 8px rgba(255,107,107,0.3);
+            border: 2px solid white;
+            margin-bottom: 0;
+        }
+
+        .scan-button-large::before {
+            content: "";
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scan-button-large::after {
+            content: "";
+            width: 14px;
+            height: 2px;
+            background: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* 添加视频推荐样式 */
+        .video-recommendations {
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .video-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .video-thumbnail {
+            width: 120px;
+            height: 80px;
+            background: #eee;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .video-play-icon {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .video-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .video-title {
+            font-size: 0.9em;
+            color: #2D4059;
+            font-weight: 500;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-meta {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        /* 添加"我的"页面样式 */
+        .profile-screen {
+            background: #fff;
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            overflow-y: auto;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);
+            padding: 20px;
+            color: white;
+            position: relative;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .profile-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 35px;
+            border: 3px solid white;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .profile-name {
+            flex: 1;
+        }
+
+        .profile-name h2 {
+            font-size: 1.2em;
+            margin-bottom: 4px;
+        }
+
+        .profile-signature {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .member-status {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stats-bar {
+            background: white;
+            margin: 0 15px;
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-around;
+            margin-top: -30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2D4059;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .function-section {
+            padding: 20px;
+        }
+
+        .function-group {
+            margin-bottom: 20px;
+        }
+
+        .function-title {
+            font-size: 1.1em;
+            color: #2D4059;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .function-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .function-item {
+            text-align: center;
+        }
+
+        .function-icon {
+            width: 45px;
+            height: 45px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            color: #FF6B6B;
+        }
+
+        .function-icon .material-icons-round {
+            font-size: 24px;
+        }
+
+        .function-name {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .all-products {
+            background: linear-gradient(135deg, #2D4059 0%, #4A4A4A 100%);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            height: calc((100% - 36px) / 2);
+        }
+
+        .all-products-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .all-products-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .all-products-icon .material-icons-round {
+            font-size: 32px;
+            color: white;
+        }
+
+        .all-products-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .all-products-count {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 产品列表页面样式 */
+        .product-list-screen {
+            background: #fff;
+            height: calc(100% - 20px);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .list-header {
+            background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);
+            padding: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-button, .view-toggle {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .filter-section {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .dropdown-filter {
+            flex: 1;
+            position: relative;
+            min-width: 0;
+        }
+
+        .selected-option {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.85em;
+            color: #2D4059;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 32px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .selected-option .material-icons-round {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            margin-top: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: none;
+        }
+
+        .dropdown-filter:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 15px;
+            font-size: 0.9em;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-item.active {
+            color: #FF6B6B;
+            background: #FFF0F0;
+        }
+
+        .sort-toggle {
+            width: 32px;
+            height: 32px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .sort-toggle .material-icons-round {
+            font-size: 18px;
+            color: #2D4059;
+        }
+
+        .status-tags {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .status-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .dot.new { background: #4CAF50; }
+        .dot.using { background: #2196F3; }
+        .dot.finished { background: #9E9E9E; }
+
+        .product-list {
+            padding: 15px;
+            overflow-y: auto;
+            height: calc(100% - 180px);
+        }
+
+        .product-list-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-content {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+            background: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .product-list-item:active .product-content {
+            transform: translateX(-80px);
+        }
+
+        .action-buttons {
+            position: absolute;
+            right: -80px;
+            top: 0;
+            height: 100%;
+            display: flex;
+            align-items: stretch;
+            width: 80px;
+        }
+
+        .product-list-item:active .action-buttons {
+            right: 0;
+        }
+
+        .action-button {
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .delete-button {
+            background: #FF5252;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .product-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-brand {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .product-name {
+            font-size: 1.1em;
+            color: #2D4059;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .product-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8em;
+        }
+
+        .purchase-date {
+            color: #666;
+        }
+
+        .expiry-status {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .expiry-status.safe {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .expiry-status.warning {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .expiry-status.expired {
+            background: #FFEBEE;
+            color: #F44336;
+        }
+
+        .product-actions {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VanityMate</h1>
+        <p>美妆产品管理助手</p>
+        <div class="button-group">
+            <a href="prototype.html" class="button">查看原型</a>
+            <a href="ui-design.html" class="button">查看UI设计</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>VanityMate UI设计</h1>
+            <p>移动端界面设计展示</p>
+        </div>
+
+        <div class="screens-container">
+            <!-- 登录页面 -->
+            <div class="screen">
+                <div class="screen-header">登录</div>
+                <div class="phone-frame">
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>VanityMate</span>
+                        <span>🔋</span>
+                    </div>
+                    <div class="auth-screen">
+                        <div class="auth-logo">
+                            <h1>VanityMate</h1>
+                            <p>您的智能美妆助手</p>
+                        </div>
+                        <div class="auth-form">
+                            <div class="input-field">📧 邮箱</div>
+                            <div class="input-field">🔒 密码</div>
+                            <div class="auth-button">登录</div>
+                            <div style="text-align: center; margin-top: 15px; color: #666;">
+                                还没有账号？立即注册
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 注册页面 -->
+            <div class="screen">
+                <div class="screen-header">注册</div>
+                <div class="phone-frame">
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>VanityMate</span>
+                        <span>🔋</span>
+                    </div>
+                    <div class="auth-screen">
+                        <div class="auth-logo">
+                            <h1>加入 VanityMate</h1>
+                            <p>开启您的美妆之旅</p>
+                        </div>
+                        <div class="auth-form">
+                            <div class="input-field">👤 用户名</div>
+                            <div class="input-field">📧 邮箱</div>
+                            <div class="input-field">🔒 密码</div>
+                            <div class="input-field">🔒 确认密码</div>
+                            <div class="auth-button">注册</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 美妆桌页面 -->
+            <div class="screen">
+                <div class="screen-header">美妆桌</div>
+                <div class="phone-frame">
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>VanityMate</span>
+                        <span>🔋</span>
+                    </div>
+                    <div class="manage-screen">
+                        <div class="manage-header">
+                            <h2>我的美妆桌</h2>
+                            <p>共收录28件产品</p>
+                        </div>
+                        <div class="category-section">
+                            <div class="category-grid">
+                                <div class="category-item">
+                                    <div class="category-icon">
+                                        <span class="material-icons-round">palette</span>
+                                    </div>
+                                    <div class="category-info">
+                                        <div class="category-name">彩妆</div>
+                                        <div class="category-count">8件产品</div>
+                                    </div>
+                                </div>
+                                <div class="category-item">
+                                    <div class="category-icon">
+                                        <span class="material-icons-round">spa</span>
+                                    </div>
+                                    <div class="category-info">
+                                        <div class="category-name">护肤</div>
+                                        <div class="category-count">12件产品</div>
+                                    </div>
+                                </div>
+                                <div class="category-item">
+                                    <div class="category-icon">
+                                        <span class="material-icons-round">water_drop</span>
+                                    </div>
+                                    <div class="category-info">
+                                        <div class="category-name">香水</div>
+                                        <div class="category-count">3件产品</div>
+                                    </div>
+                                </div>
+                                <div class="category-item">
+                                    <div class="category-icon">
+                                        <span class="material-icons-round">brush</span>
+                                    </div>
+                                    <div class="category-info">
+                                        <div class="category-name">工具</div>
+                                        <div class="category-count">5件产品</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="all-products">
+                                <div class="all-products-info">
+                                    <div class="all-products-icon">
+                                        <span class="material-icons-round">grid_view</span>
+                                    </div>
+                                    <div>
+                                        <div class="all-products-text">全部产品</div>
+                                        <div class="all-products-count">38件产品</div>
+                                    </div>
+                                </div>
+                                <span class="material-icons-round" style="color: white; font-size: 32px;">chevron_right</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-bar">
+                        <div class="tab-item">美妆桌</div>
+                        <div class="scan-button-container">
+                            <div class="scan-button-large"></div>
+                        </div>
+                        <div class="tab-item">我的</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品列表页面 -->
+            <div class="screen">
+                <div class="screen-header">彩妆产品</div>
+                <div class="phone-frame">
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>VanityMate</span>
+                        <span>🔋</span>
+                    </div>
+                    <div class="product-list-screen">
+                        <div class="list-header">
+                            <div class="back-button">
+                                <span class="material-icons-round">arrow_back</span>
+                            </div>
+                            <h2>彩妆产品</h2>
+                            <div class="view-toggle">
+                                <span class="material-icons-round">grid_view</span>
+                            </div>
+                        </div>
+                        <div class="filter-section">
+                            <div class="filter-row">
+                                <div class="dropdown-filter">
+                                    <div class="selected-option">
+                                        <span class="material-icons-round">sort</span>
+                                        购入时间
+                                        <span class="material-icons-round">expand_more</span>
+                                    </div>
+                                    <div class="dropdown-menu">
+                                        <div class="dropdown-item active">购入时间</div>
+                                        <div class="dropdown-item">过期时间</div>
+                                        <div class="dropdown-item">使用频率</div>
+                                        <div class="dropdown-item">价格</div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-filter">
+                                    <div class="selected-option">
+                                        <span class="material-icons-round">category</span>
+                                        全部类型
+                                        <span class="material-icons-round">expand_more</span>
+                                    </div>
+                                    <div class="dropdown-menu">
+                                        <div class="dropdown-item active">全部类型</div>
+                                        <div class="dropdown-item">唇部彩妆</div>
+                                        <div class="dropdown-item">眼部彩妆</div>
+                                        <div class="dropdown-item">面部彩妆</div>
+                                    </div>
+                                </div>
+                                <div class="sort-toggle">
+                                    <span class="material-icons-round">arrow_downward</span>
+                                </div>
+                            </div>
+                            <div class="status-tags">
+                                <div class="status-tag">
+                                    <span class="dot new"></span>
+                                    未开封
+                                </div>
+                                <div class="status-tag">
+                                    <span class="dot using"></span>
+                                    使用中
+                                </div>
+                                <div class="status-tag">
+                                    <span class="dot finished"></span>
+                                    已用完
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-list">
+                            <div class="product-list-item">
+                                <div class="product-content">
+                                    <div class="product-image">
+                                        <img src="#" alt="YSL口红">
+                                        <div class="status-indicator new"></div>
+                                    </div>
+                                    <div class="product-details">
+                                        <div class="product-brand">YSL</div>
+                                        <div class="product-name">小金条唇膏</div>
+                                        <div class="product-meta">
+                                            <span class="purchase-date">购入：2024-02-01</span>
+                                            <span class="expiry-status safe">保质期：12个月</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="action-buttons">
+                                    <div class="action-button delete-button">删除</div>
+                                </div>
+                            </div>
+                            <div class="product-list-item">
+                                <div class="product-content">
+                                    <div class="product-image">
+                                        <img src="#" alt="MAC口红">
+                                        <div class="status-indicator using"></div>
+                                    </div>
+                                    <div class="product-details">
+                                        <div class="product-brand">MAC</div>
+                                        <div class="product-name">水漾唇釉</div>
+                                        <div class="product-meta">
+                                            <span class="purchase-date">购入：2023-12-15</span>
+                                            <span class="expiry-status warning">保质期：剩余2个月</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="action-buttons">
+                                    <div class="action-button delete-button">删除</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品详情页 -->
+            <div class="screen">
+                <div class="screen-header">产品详情</div>
+                <div class="phone-frame">
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>VanityMate</span>
+                        <span>🔋</span>
+                    </div>
+                    <div class="product-screen">
+                        <div class="product-image" style="position: relative;">
+                            <img src="#" alt="产品图片" style="width: 100%; height: 100%; object-fit: cover;">
+                            <div class="edit-overlay" style="position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 20px; color: white; font-size: 0.9em; display: flex; align-items: center; gap: 5px;">
+                                <span class="material-icons-round">camera_alt</span>
+                                重新拍摄
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-title">SK-II 护肤精华露</div>
+                            <div class="expiry-date">⚠️ 将在30天后过期</div>
+                            <div style="margin-bottom: 15px;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                    <strong>开封日期：</strong>
+                                    <div class="editable-date" style="display: flex; align-items: center; gap: 5px; color: #666; cursor: pointer;">
+                                        <span>2024-01-15</span>
+                                        <span class="material-icons-round" style="font-size: 16px;">edit</span>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <strong>批号：</strong>
+                                    <span>20230615</span>
+                                </div>
+                            </div>
+                            <div style="color: #666;">
+                                <h3 style="margin-bottom: 10px;">成分分析</h3>
+                                <p>主要成分：神仙水、玻尿酸、维生素E</p>
+                                <p style="color: #FF6B6B;">⚠️ 含有潜在致敏成分</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 扫描页面 -->
+            <div class="screen">
+                <div class="screen-header">扫描录入</div>
+                <div class="phone-frame">
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>VanityMate</span>
+                        <span>🔋</span>
+                    </div>
+                    <div class="scan-screen">
+                        <div class="scan-overlay"></div>
+                        <div style="color: white; text-align: center; padding-top: 20px;">
+                            将产品对准框内
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 我的页面 -->
+            <div class="screen">
+                <div class="screen-header">我的</div>
+                <div class="phone-frame">
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>VanityMate</span>
+                        <span>🔋</span>
+                    </div>
+                    <div class="profile-screen">
+                        <div class="profile-header">
+                            <div class="profile-info">
+                                <div class="profile-avatar">👤</div>
+                                <div class="profile-name">
+                                    <h2>Sarah</h2>
+                                    <div class="profile-signature">分享美丽，热爱生活 ✨</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="function-section">
+                            <div class="function-group">
+                                <div class="function-title">个人管理</div>
+                                <div class="function-grid">
+                                    <div class="function-item">
+                                        <div class="function-icon">
+                                            <span class="material-icons-round">person</span>
+                                        </div>
+                                        <div class="function-name">个人资料</div>
+                                    </div>
+                                    <div class="function-item">
+                                        <div class="function-icon">
+                                            <span class="material-icons-round">security</span>
+                                        </div>
+                                        <div class="function-name">账号安全</div>
+                                    </div>
+                                    <div class="function-item">
+                                        <div class="function-icon">
+                                            <span class="material-icons-round">settings</span>
+                                        </div>
+                                        <div class="function-name">设置</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-bar">
+                        <div class="tab-item">美妆桌</div>
+                        <div class="scan-button-container">
+                            <div class="scan-button-large"></div>
+                        </div>
+                        <div class="tab-item active">我的</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

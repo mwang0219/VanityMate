@@ -85,7 +85,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <View style={styles.scanButton}>
               <TabBarIcon 
-                name="qr-code-scanner" 
+                name="add"
                 color="#FFFFFF"
                 size={32}
               />
