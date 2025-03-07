@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
+import { View, Text, StyleSheet } from 'react-native';
 
-export default function MarketScreen() {
+export default function ScanScreen() {
   return (
     <View style={styles.container}>
-      <ThemedText style={styles.text}>商场页面 - 开发中</ThemedText>
+      <Text style={styles.text}>扫描功能开发中...</Text>
     </View>
   );
 }
@@ -15,8 +14,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#fff',
   },
   text: {
-    fontSize: 18,
+    fontSize: 16,
+    color: '#666',
   },
 }); 

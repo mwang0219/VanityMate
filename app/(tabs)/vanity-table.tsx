@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { BlurView } from 'expo-blur';
 import { FontAwesome } from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import { useVanityTable } from '@/hooks/useVanityTable';
 import { ProductCard } from '@/components/products/ProductCard';
 import { router } from 'expo-router';
 import { ProductCategory } from '@/types/products';
+import { PageHeader } from '@/components/PageHeader';
 
 export default function VanityTableScreen() {
   const colorScheme = useColorScheme();
@@ -29,7 +30,11 @@ export default function VanityTableScreen() {
   };
   
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <PageHeader 
+        title="我的美妆桌" 
+        subtitle="共收录28件产品" 
+      />
       <ScrollView style={styles.scrollView}>
         {/* 顶部欢迎区域 */}
         <View style={styles.header}>
@@ -160,14 +165,14 @@ export default function VanityTableScreen() {
       >
         <FontAwesome name="plus" size={24} color="#FFFFFF" />
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#FFFFFF',
   },
   scrollView: {
     flex: 1,
