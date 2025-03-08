@@ -4,31 +4,32 @@ import { PageHeader } from '@/components/PageHeader';
 import { CategoryCard } from '@/components/CategoryCard';
 import { AllProductsCard } from '@/components/AllProductsCard';
 import { router } from 'expo-router';
+import { ProductCategory } from '@/types/products';
 
 const categories = [
   {
-    id: 1,
+    id: ProductCategory.BASE,
     name: '彩妆',
     count: 8,
     colors: ['#FFB6C1', '#FF69B4'],
     icon: 'palette',
   },
   {
-    id: 2,
+    id: ProductCategory.SKINCARE,
     name: '护肤',
     count: 12,
     colors: ['#E6E6FA', '#9370DB'],
     icon: 'spa',
   },
   {
-    id: 3,
+    id: ProductCategory.FRAGRANCE,
     name: '香水',
     count: 3,
     colors: ['#98FB98', '#3CB371'],
     icon: 'opacity',
   },
   {
-    id: 4,
+    id: ProductCategory.TOOLS,
     name: '工具',
     count: 5,
     colors: ['#87CEEB', '#4169E1'],
@@ -37,16 +38,22 @@ const categories = [
 ];
 
 export default function VanityTableScreen() {
-  const handleCategoryPress = (categoryId: number) => {
-    router.push(`/category/${categoryId}`);
+  const handleCategoryPress = (categoryId: ProductCategory) => {
+    router.push({
+      pathname: '/(tabs)/products',
+      params: { category: categoryId }
+    });
   };
 
   const handleAllProductsPress = () => {
-    router.push('/(tabs)/products');
+    router.push({
+      pathname: '/(tabs)/products',
+      params: { category: 'all' }
+    });
   };
 
   const totalProducts = categories.reduce((sum, category) => sum + category.count, 0);
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <PageHeader 
@@ -70,7 +77,7 @@ export default function VanityTableScreen() {
           count={totalProducts}
           onPress={handleAllProductsPress}
         />
-      </View>
+        </View>
     </SafeAreaView>
   );
 }
