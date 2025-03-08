@@ -10,11 +10,26 @@ export interface Product {
   name: string;
   brand: string;
   category_id: string;
+  subcategory_id: number | null;
+  description: string | null;
+  image_url: string | null;
+  pao: number | null;
+  created_at: string;
+}
+
+export interface UserProduct {
+  id: string;
   user_id: string;
-  purchase_date: string;
+  product_id: string;
+  status: number;
+  batch_code: string | null;
+  purchase_date: string | null;
+  open_date: string | null;
   expiry_date: string | null;
-  opened_date: string | null;
-  status: 'unopened' | 'in_use' | 'used_up';
+  image_url: string | null;
+  is_favorite: boolean;
+  last_used_at: string | null;
+  notes: string | null;
   created_at: string;
   updated_at: string;
 }

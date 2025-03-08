@@ -31,6 +31,7 @@ module.exports = {
       supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
       testUserId: process.env.EXPO_PUBLIC_TEST_USER_ID,
       testCategoryId: process.env.EXPO_PUBLIC_TEST_CATEGORY_ID,
+      testSubcategoryId: process.env.EXPO_PUBLIC_TEST_SUBCATEGORY_ID,
     },
   }
 }; 
