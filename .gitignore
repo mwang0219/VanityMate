@@ -37,4 +37,6 @@ yarn-error.*
 
 app-example
 .env
+.env.local
 .env.development
+.env.production
