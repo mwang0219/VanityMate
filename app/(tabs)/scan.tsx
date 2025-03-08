@@ -5,13 +5,9 @@ import { TestResult as TestResultComponent } from '@/components/TestResult';
 import { getProductTests } from '@/utils/product-tests';
 import { TestResult } from '@/types/test';
 
-// 临时使用固定值，实际应该从用户认证中获取
-const TEST_USER_ID = 'test-user-id';
-const TEST_CATEGORY_ID = 'test-category-id';
-
 export default function ScanScreen() {
   const [testResults, setTestResults] = useState<TestResult[]>([]);
-  const productTests = getProductTests(TEST_USER_ID, TEST_CATEGORY_ID);
+  const productTests = getProductTests();
 
   const runAllTests = async () => {
     setTestResults([]); // 清空之前的测试结果

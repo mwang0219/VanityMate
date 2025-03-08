@@ -29,6 +29,8 @@ module.exports = {
     extra: {
       supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
       supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
+      testUserId: process.env.EXPO_PUBLIC_TEST_USER_ID,
+      testCategoryId: process.env.EXPO_PUBLIC_TEST_CATEGORY_ID,
     },
   }
 }; 

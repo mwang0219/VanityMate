@@ -2,19 +2,20 @@ import { ProductRepository } from '@/lib/supabase/repositories/products';
 import { Product } from '@/lib/supabase/types';
 import { TestCase } from '@/types/test';
 import { runTest } from './test-utils';
+import { getTestConfig } from '@/config/test.config';
 
 const productRepo = new ProductRepository();
+const testConfig = getTestConfig();
 
-const createTestProduct = (userId: string, categoryId: string): Partial<Product> => ({
-  name: "测试产品",
-  brand: "测试品牌",
-  category_id: categoryId,
-  user_id: userId,
+const createTestProduct = (): Partial<Product> => ({
+  ...testConfig.productDefaults,
+  category_id: testConfig.categoryId,
+  user_id: testConfig.userId,
   purchase_date: new Date().toISOString(),
   status: "unopened" as const
 });
 
-export const getProductTests = (userId: string, categoryId: string): TestCase[] => {
+export const getProductTests = (): TestCase[] => {
   let createdProductId: string;
 
   return [
@@ -22,7 +23,7 @@ export const getProductTests = (userId: string, categoryId: string): TestCase[] 
       name: 'Create Product',
       run: async () => {
         const result = await runTest('创建产品', async () => {
-          const product = await productRepo.create(createTestProduct(userId, categoryId));
+          const product = await productRepo.create(createTestProduct());
           createdProductId = product.id;
           return product;
         });
