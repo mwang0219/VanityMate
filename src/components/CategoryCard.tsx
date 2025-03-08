@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 
 type CategoryCardProps = {
   name: string;
@@ -24,14 +23,14 @@ export function CategoryCard({ name, count, colors, icon, onPress }: CategoryCar
         <View style={styles.bubbleTopRight} />
         <View style={styles.bubbleBottomLeft} />
         
-        <BlurView intensity={20} tint="light" style={styles.categoryIcon}>
+        <View style={styles.categoryIcon}>
           <MaterialIcons name={icon as any} size={32} color="white" />
-        </BlurView>
+        </View>
         <View style={styles.categoryInfo}>
           <Text style={styles.categoryName}>{name}</Text>
-          <BlurView intensity={20} tint="light" style={styles.categoryCount}>
+          <View style={styles.categoryCount}>
             <Text style={styles.categoryCountText}>{count}件产品</Text>
-          </BlurView>
+          </View>
         </View>
       </LinearGradient>
     </TouchableOpacity>
@@ -40,7 +39,7 @@ export function CategoryCard({ name, count, colors, icon, onPress }: CategoryCar
 
 const styles = StyleSheet.create({
   categoryItem: {
-    width: (375 - 42) / 2, // 屏幕宽度减去左右padding和间距
+    width: (375 - 42) / 2,
     aspectRatio: 1,
     borderRadius: 20,
     padding: 25,
