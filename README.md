@@ -33,6 +33,19 @@ VanityMate 是一款专为美妆爱好者设计的智能管理应用。它帮助
 - TailwindCSS (样式管理)
 - Expo Router (导航)
 
+## 数据库设计
+
+### ER 图
+![VanityMate 数据库设计](src/assets/images/dbdiagram.png)
+
+### 主要实体
+- 用户 (Users)：存储用户基本信息
+- 产品 (Products)：基础产品信息
+- 用户产品 (User Products)：用户特定的产品使用信息
+- 产品类别 (Product Categories)：产品分类信息
+- 产品子类别 (Product Subcategories)：详细分类
+- 产品状态 (Product Status)：产品使用状态
+
 ## 本地开发设置
 
 ### 前提条件
