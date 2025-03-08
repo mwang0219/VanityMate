@@ -104,12 +104,21 @@ export const getProductTests = (): TestCase[] => {
             throw new Error('没有可用的产品ID');
           }
           
-          // 只删除基础产品
+          // 删除基础产品
           await productRepo.delete(createdProductId);
           
-          // 验证删除
-          const product = await productRepo.findOne(createdProductId);
-          if (product) throw new Error('产品删除失败');
+          // 验证删除 - 使用 Supabase 查询直接检查
+          const { data, error } = await supabase
+            .from('products')
+            .select('id')
+            .eq('id', createdProductId);
+            
+          if (error) throw error;
+          
+          // 如果找到数据，说明删除失败
+          if (data && data.length > 0) {
+            throw new Error('产品删除失败');
+          }
           
           return { message: '产品已成功删除' };
         });
