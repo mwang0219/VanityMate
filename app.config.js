@@ -15,13 +15,15 @@ module.exports = {
       '**/*'
     ],
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
+      bundleIdentifier: 'com.vanitymate.app'
     },
     android: {
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#ffffff'
-      }
+      },
+      package: 'com.vanitymate.app'
     },
     web: {
       favicon: './assets/favicon.png'
@@ -33,5 +35,19 @@ module.exports = {
       testCategoryId: process.env.EXPO_PUBLIC_TEST_CATEGORY_ID,
       testSubcategoryId: process.env.EXPO_PUBLIC_TEST_SUBCATEGORY_ID,
     },
+    plugins: [
+      [
+        '@react-native-firebase/app',
+        {
+          // Firebase 配置选项
+        }
+      ]
+    ],
+    // 启用新架构
+    experiments: {
+      tsconfigPaths: true
+    },
+    // 显式启用新架构
+    newArchEnabled: true
   }
 }; 
