@@ -29,7 +29,20 @@ export function ProductList() {
 
       let query = supabase
         .from('user_products')
-        .select('*, product:products(*)')
+        .select(`
+          *,
+          product:products (
+            id,
+            name,
+            brand,
+            category_id,
+            subcategory_id,
+            description,
+            image_url,
+            pao,
+            created_at
+          )
+        `)
         .eq('user_id', user.id);
 
       // 应用分类筛选
@@ -71,9 +84,20 @@ export function ProductList() {
       const { data, error: fetchError } = await query;
 
       if (fetchError) throw fetchError;
-      setProducts(data as UserProduct[]);
+
+      // 验证数据完整性
+      const validProducts = (data as UserProduct[]).filter(item => {
+        if (!item.product) {
+          console.warn(`产品ID ${item.product_id} 的关联产品数据缺失`);
+          return false;
+        }
+        return true;
+      });
+
+      setProducts(validProducts);
     } catch (err) {
       setError(err instanceof Error ? err.message : '获取产品列表失败');
+      console.error('获取产品列表错误:', err);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -81,7 +105,17 @@ export function ProductList() {
   };
 
   useEffect(() => {
-    fetchProducts();
+    let mounted = true;
+
+    const loadProducts = async () => {
+      await fetchProducts();
+    };
+
+    loadProducts();
+
+    return () => {
+      mounted = false;
+    };
   }, [category, sortBy, statusFilter, searchQuery]);
 
   const handleRefresh = () => {
@@ -131,7 +165,7 @@ export function ProductList() {
     );
   }
 
-  if (products.length === 0) {
+  if (!products || products.length === 0) {
     return (
       <View style={styles.centerContainer}>
         <ThemedText style={styles.emptyText}>
@@ -146,12 +180,14 @@ export function ProductList() {
       data={products}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <ProductCard
-          userProduct={item}
-          onPress={() => handleProductPress(item.id)}
-          onFavoritePress={() => handleToggleFavorite(item.id)}
-          showLastUsed
-        />
+        item.product ? (
+          <ProductCard
+            userProduct={item}
+            onPress={() => handleProductPress(item.id)}
+            onFavoritePress={() => handleToggleFavorite(item.id)}
+            showLastUsed
+          />
+        ) : null
       )}
       contentContainerStyle={styles.listContent}
       refreshControl={
