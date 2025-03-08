@@ -6,6 +6,7 @@ module.exports = {
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'light',
+    scheme: 'vanitymate',
     splash: {
       image: './assets/splash.png',
       resizeMode: 'contain',
@@ -15,13 +16,33 @@ module.exports = {
       '**/*'
     ],
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
+      bundleIdentifier: 'com.vanitymate.app',
+      associatedDomains: ['applinks:vanitymate.app']
     },
     android: {
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#ffffff'
-      }
+      },
+      package: 'com.vanitymate.app',
+      intentFilters: [
+        {
+          action: "VIEW",
+          autoVerify: true,
+          data: [
+            {
+              scheme: "https",
+              host: "*.vanitymate.app",
+              pathPrefix: "/"
+            },
+            {
+              scheme: "vanitymate",
+            }
+          ],
+          category: ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     web: {
       favicon: './assets/favicon.png'
@@ -33,5 +54,11 @@ module.exports = {
       testCategoryId: process.env.EXPO_PUBLIC_TEST_CATEGORY_ID,
       testSubcategoryId: process.env.EXPO_PUBLIC_TEST_SUBCATEGORY_ID,
     },
+    // 启用新架构
+    experiments: {
+      tsconfigPaths: true
+    },
+    // 显式启用新架构
+    newArchEnabled: true
   }
 }; 
