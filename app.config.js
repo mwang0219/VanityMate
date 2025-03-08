@@ -6,6 +6,7 @@ module.exports = {
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'light',
+    scheme: 'vanitymate',
     splash: {
       image: './assets/splash.png',
       resizeMode: 'contain',
@@ -16,14 +17,32 @@ module.exports = {
     ],
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'com.vanitymate.app'
+      bundleIdentifier: 'com.vanitymate.app',
+      associatedDomains: ['applinks:vanitymate.app']
     },
     android: {
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#ffffff'
       },
-      package: 'com.vanitymate.app'
+      package: 'com.vanitymate.app',
+      intentFilters: [
+        {
+          action: "VIEW",
+          autoVerify: true,
+          data: [
+            {
+              scheme: "https",
+              host: "*.vanitymate.app",
+              pathPrefix: "/"
+            },
+            {
+              scheme: "vanitymate",
+            }
+          ],
+          category: ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     web: {
       favicon: './assets/favicon.png'
@@ -35,14 +54,6 @@ module.exports = {
       testCategoryId: process.env.EXPO_PUBLIC_TEST_CATEGORY_ID,
       testSubcategoryId: process.env.EXPO_PUBLIC_TEST_SUBCATEGORY_ID,
     },
-    plugins: [
-      [
-        '@react-native-firebase/app',
-        {
-          // Firebase 配置选项
-        }
-      ]
-    ],
     // 启用新架构
     experiments: {
       tsconfigPaths: true
