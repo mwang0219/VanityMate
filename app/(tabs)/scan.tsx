@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { SupabaseConnectionTest } from '@/components/SupabaseConnectionTest';
 
 export default function ScanScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>扫描功能开发中...</Text>
+      <SupabaseConnectionTest />
     </View>
   );
 }
@@ -12,12 +13,7 @@ export default function ScanScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  text: {
-    fontSize: 16,
-    color: '#666',
+    backgroundColor: '#f5f5f5',
+    paddingTop: 50,
   },
 }); 
