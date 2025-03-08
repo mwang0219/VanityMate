@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { useProducts } from '@/contexts/ProductsContext';
 import { ProductCard } from '@/components/products/ProductCard';
@@ -16,7 +16,7 @@ export function ProductList() {
   const [products, setProducts] = useState<UserProduct[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProducts = async (isRefreshing = false) => {
+  const fetchProducts = useCallback(async (isRefreshing = false) => {
     try {
       if (!user) {
         throw new Error('用户未登录');
@@ -85,24 +85,33 @@ export function ProductList() {
 
       if (fetchError) throw fetchError;
 
-      // 验证数据完整性（现在应该不会有无效数据了）
-      const validProducts = (data as UserProduct[]);
-
-      setProducts(validProducts);
+      return data as UserProduct[];
     } catch (err) {
-      setError(err instanceof Error ? err.message : '获取产品列表失败');
-      console.error('获取产品列表错误:', err);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+      throw err;
     }
-  };
+  }, [user, category, sortBy, statusFilter, searchQuery]);
 
   useEffect(() => {
     let mounted = true;
 
     const loadProducts = async () => {
-      await fetchProducts();
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchProducts();
+        if (mounted) {
+          setProducts(data || []);
+        }
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : '获取产品列表失败');
+          console.error('获取产品列表错误:', err);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
     };
 
     loadProducts();
@@ -110,18 +119,25 @@ export function ProductList() {
     return () => {
       mounted = false;
     };
-  }, [category, sortBy, statusFilter, searchQuery]);
+  }, [fetchProducts]);
 
-  const handleRefresh = () => {
-    setRefreshing(true);
-    fetchProducts(true);
-  };
+  const handleRefresh = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      const data = await fetchProducts(true);
+      setProducts(data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '刷新产品列表失败');
+    } finally {
+      setRefreshing(false);
+    }
+  }, [fetchProducts]);
 
-  const handleProductPress = (productId: string) => {
+  const handleProductPress = useCallback((productId: string) => {
     router.push(`/product/${productId}`);
-  };
+  }, []);
 
-  const handleToggleFavorite = async (productId: string) => {
+  const handleToggleFavorite = useCallback(async (productId: string) => {
     try {
       if (!user) return;
 
@@ -137,11 +153,19 @@ export function ProductList() {
         .eq('id', productId);
 
       if (updateError) throw updateError;
-      fetchProducts();
+      
+      // 只更新特定产品的状态，而不是重新获取所有数据
+      setProducts(prevProducts => 
+        prevProducts.map(p => 
+          p.id === productId 
+            ? { ...p, is_favorite: !p.is_favorite }
+            : p
+        )
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : '更新收藏状态失败');
     }
-  };
+  }, [user, products]);
 
   if (loading && !refreshing) {
     return (
@@ -174,14 +198,12 @@ export function ProductList() {
       data={products}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        item.product ? (
-          <ProductCard
-            userProduct={item}
-            onPress={() => handleProductPress(item.id)}
-            onFavoritePress={() => handleToggleFavorite(item.id)}
-            showLastUsed
-          />
-        ) : null
+        <ProductCard
+          userProduct={item}
+          onPress={() => handleProductPress(item.id)}
+          onFavoritePress={() => handleToggleFavorite(item.id)}
+          showLastUsed
+        />
       )}
       contentContainerStyle={styles.listContent}
       refreshControl={
