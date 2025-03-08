@@ -5,8 +5,9 @@ import { ProductFilter } from '@/components/products/ProductFilter';
 import { ProductList } from '@/components/products/ProductList';
 import { PageHeader } from '@/components/PageHeader';
 import { useProducts } from '@/contexts/ProductsContext';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import { ProductCategory } from '@/types/products';
+import { MaterialIcons } from '@expo/vector-icons';
 
 function ProductsContent() {
   const { category } = useLocalSearchParams<{ category: ProductCategory | 'all' }>();
@@ -23,6 +24,10 @@ function ProductsContent() {
       <PageHeader 
         title="我的产品" 
         subtitle="管理你的美妆产品"
+        leftButton={{
+          icon: <MaterialIcons name="arrow-back" size={24} color="#333" />,
+          onPress: () => router.back(),
+        }}
       />
       <ProductFilter />
       <View style={styles.content}>

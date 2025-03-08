@@ -40,14 +40,14 @@ const categories = [
 export default function VanityTableScreen() {
   const handleCategoryPress = (categoryId: ProductCategory) => {
     router.push({
-      pathname: '/(tabs)/products',
+      pathname: '/products',
       params: { category: categoryId }
     });
   };
 
   const handleAllProductsPress = () => {
     router.push({
-      pathname: '/(tabs)/products',
+      pathname: '/products',
       params: { category: 'all' }
     });
   };
