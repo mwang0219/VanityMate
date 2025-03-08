@@ -31,7 +31,7 @@ export function ProductList() {
         .from('user_products')
         .select(`
           *,
-          product:products (
+          product:products!inner (
             id,
             name,
             brand,
@@ -85,14 +85,8 @@ export function ProductList() {
 
       if (fetchError) throw fetchError;
 
-      // 验证数据完整性
-      const validProducts = (data as UserProduct[]).filter(item => {
-        if (!item.product) {
-          console.warn(`产品ID ${item.product_id} 的关联产品数据缺失`);
-          return false;
-        }
-        return true;
-      });
+      // 验证数据完整性（现在应该不会有无效数据了）
+      const validProducts = (data as UserProduct[]);
 
       setProducts(validProducts);
     } catch (err) {
