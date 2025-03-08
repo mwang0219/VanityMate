@@ -46,7 +46,11 @@ export function ProductList() {
         .eq('user_id', user.id);
 
       // 应用分类筛选
-      if (category !== 'all') {
+      if (category === 'MAKEUP') {
+        // 如果是彩妆类别，筛选所有相关子类别
+        query = query.in('product.category_id', ['BASE', 'EYE', 'LIP']);
+      } else if (category !== 'all') {
+        // 其他类别保持不变
         query = query.eq('product.category_id', category);
       }
 
