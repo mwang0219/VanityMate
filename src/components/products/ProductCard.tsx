@@ -4,7 +4,7 @@ import { BlurView } from 'expo-blur';
 import { FontAwesome } from '@expo/vector-icons';
 import { useColorScheme } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
-import { UserProduct, ProductStatus } from '@/types/products';
+import { UserProduct } from '@/types/products';
 import { formatDistanceToNow } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
@@ -60,15 +60,15 @@ export function ProductCard({
           {showLastUsed && (
             <ThemedText style={styles.lastUsed}>{lastUsedText}</ThemedText>
           )}
-          {product.expiry_date && (
+          {userProduct.expiry_date && (
             <View style={styles.expirationContainer}>
               <FontAwesome name="clock-o" size={14} color="#FF6B6B" />
               <ThemedText style={styles.expiration}>
-                到期: {new Date(product.expiry_date).toLocaleDateString()}
+                到期: {new Date(userProduct.expiry_date).toLocaleDateString()}
               </ThemedText>
             </View>
           )}
-          {product.status === ProductStatus.IN_USE && (
+          {userProduct.status === 2 && (
             <View style={styles.statusContainer}>
               <FontAwesome name="check-circle" size={14} color="#4CAF50" />
               <ThemedText style={styles.status}>使用中</ThemedText>
