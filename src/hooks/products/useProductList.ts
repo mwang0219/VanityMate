@@ -4,14 +4,14 @@ import { UserProduct } from '@/lib/supabase/types';
 import { ProductCategory } from '@/types/products';
 import { useAuth } from '@/hooks/useAuth';
 
-interface UseProductsState {
+interface UseProductListState {
   products: UserProduct[];
   isLoading: boolean;
   error: Error | null;
 }
 
-export function useProducts(category: ProductCategory | 'MAKEUP') {
-  const [state, setState] = useState<UseProductsState>({
+export function useProductList(category: ProductCategory | 'MAKEUP') {
+  const [state, setState] = useState<UseProductListState>({
     products: [],
     isLoading: true,
     error: null,

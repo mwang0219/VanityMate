@@ -1,51 +1,37 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { ProductCategory } from '@/types/products';
+import { UserProduct } from '@/lib/supabase/types';
+import { useProductList } from '@/hooks/products';
 
-type SortOption = 'purchase_date' | 'expiry_date' | 'last_used' | 'name';
-type StatusFilter = 'all' | 'unopened' | 'in_use' | 'finished';
-type CategoryType = ProductCategory | 'all' | 'MAKEUP';
-
-interface ProductsContextType {
-  category: CategoryType;
-  setCategory: (category: CategoryType) => void;
-  sortBy: SortOption;
-  setSortBy: (option: SortOption) => void;
-  statusFilter: StatusFilter;
-  setStatusFilter: (status: StatusFilter) => void;
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  resetFilters: () => void;
+interface ProductsContextValue {
+  products: UserProduct[];
+  isLoading: boolean;
+  error: Error | null;
+  selectedCategory: ProductCategory | 'MAKEUP' | null;
+  setSelectedCategory: (category: ProductCategory | 'MAKEUP' | null) => void;
 }
 
-const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
+const ProductsContext = createContext<ProductsContextValue | undefined>(undefined);
 
-export function ProductsProvider({ children }: { children: React.ReactNode }) {
-  const [category, setCategory] = useState<CategoryType>('all');
-  const [sortBy, setSortBy] = useState<SortOption>('purchase_date');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+interface ProductsProviderProps {
+  children: ReactNode;
+  initialCategory?: ProductCategory | 'MAKEUP' | null;
+}
 
-  const resetFilters = useCallback(() => {
-    setCategory('all');
-    setSortBy('purchase_date');
-    setStatusFilter('all');
-    setSearchQuery('');
-  }, []);
+export function ProductsProvider({ children, initialCategory = null }: ProductsProviderProps) {
+  const [selectedCategory, setSelectedCategory] = React.useState<ProductCategory | 'MAKEUP' | null>(initialCategory);
+  const { products, isLoading, error } = useProductList(selectedCategory || 'MAKEUP');
+
+  const value = React.useMemo(() => ({
+    products,
+    isLoading,
+    error,
+    selectedCategory,
+    setSelectedCategory,
+  }), [products, isLoading, error, selectedCategory]);
 
   return (
-    <ProductsContext.Provider
-      value={{
-        category,
-        setCategory,
-        sortBy,
-        setSortBy,
-        statusFilter,
-        setStatusFilter,
-        searchQuery,
-        setSearchQuery,
-        resetFilters,
-      }}
-    >
+    <ProductsContext.Provider value={value}>
       {children}
     </ProductsContext.Provider>
   );
@@ -53,7 +39,7 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
 
 export function useProducts() {
   const context = useContext(ProductsContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useProducts must be used within a ProductsProvider');
   }
   return context;

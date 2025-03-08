@@ -1,43 +1,67 @@
 import { BaseRepository } from './base';
-import { Product } from '../types';
+import { Product, UserProduct } from '../types';
+import { ProductCategory } from '@/types/products';
+import { supabase } from '../client';
 
-export class ProductRepository extends BaseRepository<Product> {
+export interface ProductFilters {
+  userId: string;
+  category: ProductCategory | 'MAKEUP';
+}
+
+export class ProductRepository extends BaseRepository<UserProduct> {
   constructor() {
-    super('products');
+    super('user_products');
   }
 
-  async findByCategory(categoryId: string): Promise<Product[]> {
-    return this.findMany(builder => 
-      builder.eq('category_id', categoryId)
-    );
+  /**
+   * 获取用户产品列表
+   */
+  async getUserProducts(filters: ProductFilters): Promise<UserProduct[]> {
+    const { userId, category } = filters;
+
+    try {
+      let query = supabase
+        .from('user_products')
+        .select('*, product:products(*)')
+        .eq('user_id', userId);
+
+      // 应用分类筛选
+      if (category === 'MAKEUP') {
+        query = query.in('product.category_id', [ProductCategory.BASE, ProductCategory.EYE, ProductCategory.LIP]);
+      } else if (category && category !== 'all') {
+        query = query.eq('product.category_id', category);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
-  async findByUser(userId: string): Promise<Product[]> {
-    return this.findMany(builder => 
-      builder.eq('user_id', userId)
-    );
-  }
+  /**
+   * 获取指定类别的产品数量
+   */
+  async getCategoryCount(userId: string, category: ProductCategory | 'MAKEUP'): Promise<number> {
+    try {
+      let query = supabase
+        .from('user_products')
+        .select('*, product:products(*)', { count: 'exact', head: true })
+        .eq('user_id', userId);
 
-  async findByUserAndCategory(userId: string, categoryId: string): Promise<Product[]> {
-    return this.findMany(builder => 
-      builder
-        .eq('user_id', userId)
-        .eq('category_id', categoryId)
-    );
-  }
+      if (category === 'MAKEUP') {
+        query = query.in('product.category_id', [ProductCategory.BASE, ProductCategory.EYE, ProductCategory.LIP]);
+      } else {
+        query = query.eq('product.category_id', category);
+      }
 
-  async findByStatus(userId: string, status: Product['status']): Promise<Product[]> {
-    return this.findMany(builder => 
-      builder
-        .eq('user_id', userId)
-        .eq('status', status)
-    );
-  }
-
-  async updateStatus(id: string, status: Product['status']): Promise<Product> {
-    return this.update(id, { 
-      status,
-      opened_date: status === 'in_use' ? new Date().toISOString() : null
-    });
+      const { count, error } = await query;
+      if (error) throw error;
+      return count || 0;
+    } catch (error) {
+      console.error('获取类别产品数量失败:', error);
+      return 0;
+    }
   }
 } 

@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
 import { ProductService } from '@/services/product.service';
-import { UserProduct } from '@/lib/supabase/types';
 import { ProductCategory } from '@/types/products';
 import { useAuth } from '@/hooks/useAuth';
 
-interface UseProductsState {
-  products: UserProduct[];
+interface UseCategoryCountState {
+  count: number;
   isLoading: boolean;
   error: Error | null;
 }
 
-export function useProducts(category: ProductCategory | 'MAKEUP') {
-  const [state, setState] = useState<UseProductsState>({
-    products: [],
+export function useCategoryCount(category: ProductCategory | 'MAKEUP') {
+  const [state, setState] = useState<UseCategoryCountState>({
+    count: 0,
     isLoading: true,
     error: null,
   });
@@ -23,16 +22,16 @@ export function useProducts(category: ProductCategory | 'MAKEUP') {
   useEffect(() => {
     let isMounted = true;
 
-    const fetchProducts = async () => {
+    const fetchCount = async () => {
       if (!user?.id) return;
 
       try {
         setState(prev => ({ ...prev, isLoading: true, error: null }));
-        const products = await productService.getUserProductsByCategory(user.id, category);
+        const count = await productService.getCategoryProductCount(user.id, category);
         
         if (isMounted) {
           setState({
-            products,
+            count,
             isLoading: false,
             error: null,
           });
@@ -40,7 +39,7 @@ export function useProducts(category: ProductCategory | 'MAKEUP') {
       } catch (error) {
         if (isMounted) {
           setState({
-            products: [],
+            count: 0,
             isLoading: false,
             error: error as Error,
           });
@@ -48,7 +47,7 @@ export function useProducts(category: ProductCategory | 'MAKEUP') {
       }
     };
 
-    fetchProducts();
+    fetchCount();
 
     return () => {
       isMounted = false;

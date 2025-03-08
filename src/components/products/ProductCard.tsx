@@ -21,8 +21,24 @@ export function ProductCard({
   onFavoritePress,
   showLastUsed = false,
 }: ProductCardProps) {
+  console.log('[ProductCard] Rendering with userProduct:', {
+    id: userProduct?.id,
+    product_id: userProduct?.product_id,
+    hasProduct: !!userProduct?.product,
+    productDetails: userProduct?.product ? {
+      id: userProduct.product.id,
+      name: userProduct.product.name,
+      image_url: userProduct.product.image_url
+    } : 'null'
+  });
+
   const colorScheme = useColorScheme();
   const { product } = userProduct;
+
+  if (!product) {
+    console.warn('[ProductCard] Product is null for userProduct:', userProduct);
+    return null;
+  }
 
   const lastUsedText = userProduct.last_used_at
     ? `上次使用: ${formatDistanceToNow(new Date(userProduct.last_used_at), { 
