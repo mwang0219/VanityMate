@@ -59,15 +59,18 @@ const SwipeableRowComponent = forwardRef<Swipeable, SwipeableRowProps>(({ childr
   };
 
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={styles.container}>
       <Swipeable
         ref={ref}
         friction={2}
         enableTrackpadTwoFingerGesture
         rightThreshold={40}
         renderRightActions={renderRightActions}
+        containerStyle={styles.swipeableContainer}
       >
-        {children}
+        <View style={styles.cardContainer}>
+          {children}
+        </View>
       </Swipeable>
     </GestureHandlerRootView>
   );
@@ -78,9 +81,29 @@ SwipeableRowComponent.displayName = 'SwipeableRow';
 export const SwipeableRow = SwipeableRowComponent;
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+  },
+  swipeableContainer: {
+    backgroundColor: 'transparent',
+  },
+  cardContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, // Android 阴影
+    marginVertical: 6, // 添加垂直间距
+  },
   rightActionsContainer: {
     width: 80,
     flexDirection: 'row',
+    marginRight: 10,
   },
   rightActionButton: {
     flex: 1,
