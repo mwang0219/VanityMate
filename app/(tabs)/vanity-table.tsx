@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { PageHeader } from '@/components/PageHeader';
-import { CategoryCard } from '@/components/CategoryCard';
-import { AllProductsCard } from '@/components/AllProductsCard';
+import { CategoryCard } from '@/components/vanity-table/CategoryCard';
+import { AllProductsCard } from '@/components/vanity-table/AllProductsCard';
 import { router } from 'expo-router';
 import { ProductCategory } from '@/types/products';
 
