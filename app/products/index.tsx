@@ -13,7 +13,6 @@ export default function ProductsScreen() {
 
   // 当 category 改变时更新过滤器
   useEffect(() => {
-    console.log('[ProductsScreen] 设置分类过滤:', category);
     setFilterOptions({ category: category || null });
   }, [category, setFilterOptions]);
 

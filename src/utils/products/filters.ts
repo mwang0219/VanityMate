@@ -16,48 +16,15 @@ export function filterByCategory(
   products: UserProduct[],
   category: ProductCategory | 'MAKEUP' | null
 ): UserProduct[] {
-  console.log('[filterByCategory] 开始过滤:', {
-    totalProducts: products.length,
-    category,
-    sampleProduct: products[0]?.product
-  });
-
-  if (!category) {
-    console.log('[filterByCategory] 没有分类，返回所有产品');
-    return products;
-  }
+  if (!category) return products;
 
   const filtered = products.filter(product => {
-    if (!product.product) {
-      console.log('[filterByCategory] 警告: 产品缺少 product 属性:', product);
-      return false;
-    }
+    if (!product.product) return false;
 
     if (category === 'MAKEUP') {
-      // MAKEUP 类别包括 BASE, EYE, LIP
-      const isMakeup = ['BASE', 'EYE', 'LIP'].includes(product.product.category_id);
-      console.log('[filterByCategory] MAKEUP 过滤:', {
-        productId: product.id,
-        categoryId: product.product.category_id,
-        isMakeup
-      });
-      return isMakeup;
+      return ['BASE', 'EYE', 'LIP'].includes(product.product.category_id);
     }
-
-    const matches = product.product.category_id === category;
-    console.log('[filterByCategory] 分类匹配:', {
-      productId: product.id,
-      productCategory: product.product.category_id,
-      targetCategory: category,
-      matches
-    });
-    return matches;
-  });
-
-  console.log('[filterByCategory] 过滤结果:', {
-    totalProducts: products.length,
-    filteredCount: filtered.length,
-    category
+    return product.product.category_id === category;
   });
 
   return filtered;
@@ -127,16 +94,9 @@ export function applyFilters(
   products: UserProduct[],
   options: ProductFilterOptions
 ): UserProduct[] {
-  console.log('[applyFilters] 开始应用过滤条件:', {
-    totalProducts: products.length,
-    options,
-    sampleProduct: products[0]
-  });
-
   let filtered = [...products];
 
   if (options.category) {
-    console.log('[applyFilters] 应用分类过滤:', options.category);
     filtered = filterByCategory(filtered, options.category);
   }
 
@@ -154,12 +114,6 @@ export function applyFilters(
   if (options.status) {
     filtered = filterByStatus(filtered, options.status);
   }
-
-  console.log('[applyFilters] 过滤完成:', {
-    originalCount: products.length,
-    filteredCount: filtered.length,
-    appliedOptions: Object.keys(options).filter(key => options[key] !== undefined)
-  });
 
   return filtered;
 } 
