@@ -24,12 +24,7 @@ export function ProductCard({
   console.log('[ProductCard] Rendering with userProduct:', {
     id: userProduct?.id,
     product_id: userProduct?.product_id,
-    hasProduct: !!userProduct?.product,
-    productDetails: userProduct?.product ? {
-      id: userProduct.product.id,
-      name: userProduct.product.name,
-      image_url: userProduct.product.image_url
-    } : 'null'
+    hasProduct: !!userProduct?.product
   });
 
   const colorScheme = useColorScheme();

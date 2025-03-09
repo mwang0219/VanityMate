@@ -22,7 +22,33 @@ export class ProductRepository extends BaseRepository<UserProduct> {
     try {
       let query = supabase
         .from('user_products')
-        .select('*, product:products(*)')
+        .select(`
+          id,
+          user_id,
+          product_id,
+          status,
+          batch_code,
+          purchase_date,
+          open_date,
+          expiry_date,
+          image_url,
+          is_favorite,
+          last_used_at,
+          notes,
+          created_at,
+          updated_at,
+          product:products (
+            id,
+            name,
+            brand,
+            category_id,
+            subcategory_id,
+            description,
+            image_url,
+            pao,
+            created_at
+          )
+        `)
         .eq('user_id', userId);
 
       // 应用分类筛选
@@ -47,7 +73,12 @@ export class ProductRepository extends BaseRepository<UserProduct> {
     try {
       let query = supabase
         .from('user_products')
-        .select('*, product:products(*)', { count: 'exact', head: true })
+        .select(`
+          id,
+          product:products (
+            category_id
+          )
+        `, { count: 'exact', head: true })
         .eq('user_id', userId);
 
       if (category === 'MAKEUP') {
