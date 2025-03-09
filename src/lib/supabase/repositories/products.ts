@@ -1,6 +1,6 @@
 import { BaseRepository } from './base';
 import { Product, UserProduct, ProductCategory, ProductStatus } from '@/types/products';
-import { supabase } from '../client';
+import { supabase, SupabaseError, ValidationError } from '../client';
 import type { Database } from '../types/database';
 
 // 使用数据库类型定义
@@ -12,7 +12,19 @@ export interface ProductFilters {
   category: ProductCategory | 'MAKEUP' | 'all';
 }
 
+export interface DeleteUserProductResult {
+  success: boolean;
+  error?: {
+    code: string;
+    message: string;
+    details?: any;
+  };
+  deletedId?: string;
+}
+
 export class ProductRepository extends BaseRepository<UserProduct> {
+  private readonly supabase = supabase;
+
   constructor() {
     super('user_products');
   }
@@ -100,6 +112,103 @@ export class ProductRepository extends BaseRepository<UserProduct> {
     } catch (error) {
       console.error('获取类别产品数量失败:', error);
       return 0;
+    }
+  }
+
+  /**
+   * 删除用户产品
+   * @param userId 用户ID
+   * @param productId 产品ID
+   * @returns 删除操作的结果
+   */
+  async deleteUserProduct(
+    userId: string, 
+    productId: string
+  ): Promise<DeleteUserProductResult> {
+    if (!userId || !productId) {
+      const error = new ValidationError('用户ID和产品ID不能为空');
+      return {
+        success: false,
+        error: {
+          code: 'INVALID_PARAMS',
+          message: error.message,
+          details: error
+        }
+      };
+    }
+
+    try {
+      // 先检查记录是否存在
+      const { data: existingProduct, error: checkError } = await this.supabase
+        .from('user_products')
+        .select('id')
+        .match({
+          user_id: userId,
+          product_id: productId
+        })
+        .single();
+
+      if (checkError) {
+        const error = SupabaseError.fromDatabaseError(checkError);
+        return {
+          success: false,
+          error: {
+            code: error.code,
+            message: error.message,
+            details: error.details
+          }
+        };
+      }
+
+      if (!existingProduct) {
+        const error = new ValidationError('未找到要删除的产品');
+        return {
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: error.message,
+            details: error
+          }
+        };
+      }
+
+      const { error: deleteError } = await this.supabase
+        .from('user_products')
+        .delete()
+        .match({
+          user_id: userId,
+          product_id: productId
+        });
+
+      if (deleteError) {
+        const error = SupabaseError.fromDatabaseError(deleteError);
+        return {
+          success: false,
+          error: {
+            code: error.code,
+            message: error.message,
+            details: error.details
+          }
+        };
+      }
+
+      return {
+        success: true,
+        deletedId: productId
+      };
+    } catch (error) {
+      const supabaseError = error instanceof Error 
+        ? new SupabaseError(error.message, 'UNEXPECTED_ERROR', error)
+        : new SupabaseError('删除产品时发生意外错误', 'UNEXPECTED_ERROR', error);
+
+      return {
+        success: false,
+        error: {
+          code: supabaseError.code,
+          message: supabaseError.message,
+          details: supabaseError.details
+        }
+      };
     }
   }
 } 
