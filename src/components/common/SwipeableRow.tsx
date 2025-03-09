@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Swipeable, GestureHandlerRootView } from 'react-native-gesture-handler';
 
 interface SwipeableRowProps {
@@ -31,29 +31,33 @@ export function SwipeableRow({ children, rightActions }: SwipeableRowProps) {
     return (
       <View style={styles.rightActionsContainer}>
         {rightActions.map((action, index) => (
-          <Animated.View
+          <TouchableOpacity
             key={index}
-            style={[
-              styles.rightActionButton,
-              {
-                backgroundColor: action.backgroundColor,
-                transform: [{ translateX: trans }],
-              },
-            ]}
+            style={{ flex: 1 }}
+            onPress={() => {
+              action.onPress();
+              swipeableRef.current?.close();
+            }}
           >
-            <Animated.Text
+            <Animated.View
               style={[
-                styles.actionText,
-                { color: action.textColor || '#fff' },
+                styles.rightActionButton,
+                {
+                  backgroundColor: action.backgroundColor,
+                  transform: [{ translateX: trans }],
+                },
               ]}
-              onPress={() => {
-                action.onPress();
-                swipeableRef.current?.close();
-              }}
             >
-              {action.text}
-            </Animated.Text>
-          </Animated.View>
+              <Animated.Text
+                style={[
+                  styles.actionText,
+                  { color: action.textColor || '#fff' },
+                ]}
+              >
+                {action.text}
+              </Animated.Text>
+            </Animated.View>
+          </TouchableOpacity>
         ))}
       </View>
     );
