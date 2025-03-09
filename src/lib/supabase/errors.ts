@@ -1,4 +1,4 @@
-import { DatabaseError } from './types';
+import { PostgrestError } from '@supabase/supabase-js';
 
 export class SupabaseError extends Error {
   constructor(
@@ -10,8 +10,12 @@ export class SupabaseError extends Error {
     this.name = 'SupabaseError';
   }
 
-  static fromDatabaseError(error: DatabaseError): SupabaseError {
-    return new SupabaseError(error.message, error.code, error.details);
+  static fromDatabaseError(error: PostgrestError): SupabaseError {
+    return new SupabaseError(
+      error.message,
+      error.code,
+      { hint: error.hint, details: error.details }
+    );
   }
 }
 

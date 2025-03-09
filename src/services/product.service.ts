@@ -1,7 +1,8 @@
-import { ProductRepository, ProductFilters } from '@/lib/supabase/repositories/products';
+import { ProductRepository, ProductFilters, DeleteUserProductResult } from '@/lib/supabase/repositories/products';
 import { UserProduct } from '@/types/products';
 import { ProductCategory } from '@/types/products';
 import { useAuth } from '@/hooks/useAuth';
+import { ValidationError } from '@/lib/supabase/client';
 
 export class ProductService {
   private repository: ProductRepository;
@@ -48,5 +49,35 @@ export class ProductService {
       category: 'all' as any // 使用 'all' 来获取所有产品
     };
     return await this.repository.getUserProducts(filters);
+  }
+
+  /**
+   * 删除用户的产品
+   * @param userId 用户ID
+   * @param id 用户产品记录ID
+   * @throws {ValidationError} 当参数无效时
+   * @returns 删除操作的结果
+   */
+  async deleteUserProduct(userId: string, id: string): Promise<DeleteUserProductResult> {
+    // 参数验证
+    if (!userId?.trim()) {
+      throw new ValidationError('用户ID不能为空');
+    }
+    if (!id?.trim()) {
+      throw new ValidationError('产品记录ID不能为空');
+    }
+
+    // 调用仓库层删除方法
+    const result = await this.repository.deleteUserProduct(userId, id);
+
+    // 如果删除失败，抛出适当的错误
+    if (!result.success && result.error) {
+      if (result.error.code === 'NOT_FOUND') {
+        throw new ValidationError(result.error.message);
+      }
+      // 其他错误会保持原样返回
+    }
+
+    return result;
   }
 } 

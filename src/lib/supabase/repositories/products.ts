@@ -1,6 +1,6 @@
 import { BaseRepository } from './base';
 import { Product, UserProduct, ProductCategory, ProductStatus } from '@/types/products';
-import { supabase } from '../client';
+import { supabase, SupabaseError, ValidationError } from '../client';
 import type { Database } from '../types/database';
 
 // 使用数据库类型定义
@@ -12,7 +12,19 @@ export interface ProductFilters {
   category: ProductCategory | 'MAKEUP' | 'all';
 }
 
+export interface DeleteUserProductResult {
+  success: boolean;
+  error?: {
+    code: string;
+    message: string;
+    details?: any;
+  };
+  deletedId?: string;
+}
+
 export class ProductRepository extends BaseRepository<UserProduct> {
+  private readonly supabase = supabase;
+
   constructor() {
     super('user_products');
   }
@@ -100,6 +112,47 @@ export class ProductRepository extends BaseRepository<UserProduct> {
     } catch (error) {
       console.error('获取类别产品数量失败:', error);
       return 0;
+    }
+  }
+
+  /**
+   * 删除用户的产品记录
+   * @param userId 用户ID
+   * @param id 用户产品记录ID
+   */
+  async deleteUserProduct(
+    userId: string,
+    id: string
+  ): Promise<DeleteUserProductResult> {
+    try {
+      const { error } = await this.supabase
+        .from('user_products')
+        .delete()
+        .match({
+          user_id: userId,
+          id: id
+        });
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: error.code === 'PGRST116' ? 'NOT_FOUND' : 'UNKNOWN',
+            message: error.message
+          }
+        };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('删除用户产品时发生错误:', error);
+      return {
+        success: false,
+        error: {
+          code: 'UNKNOWN',
+          message: '删除产品时发生未知错误'
+        }
+      };
     }
   }
 } 
