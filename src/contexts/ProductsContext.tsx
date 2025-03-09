@@ -6,6 +6,8 @@ import { useProductFilter } from '@/hooks/products/useProductFilter';
 import { useProductStats, ProductStats } from '@/hooks/products/useProductStats';
 import { useProductState, ProductLoadingState, ProductError } from '@/hooks/products/useProductState';
 import { ProductFilterOptions } from '@/utils/products/filters';
+import { ProductService } from '@/services/product.service';
+import { useAuth } from '@/hooks/useAuth';
 
 interface CacheStatus {
   exists: boolean;
@@ -36,6 +38,11 @@ interface ProductsContextValue extends ProductStats {
   refreshProducts: () => Promise<void>;
   invalidateCache: () => void;
   cacheStatus: CacheStatus;
+  
+  // 删除相关
+  deleteProduct: (productId: string) => Promise<void>;
+  isDeletingProduct: boolean;
+  deletingProductId: string | null;
 }
 
 const ProductsContext = createContext<ProductsContextValue | undefined>(undefined);
@@ -75,6 +82,17 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
   const { filteredProducts } = useProductFilter(allProducts, filterOptions);
 
   const stats = useProductStats(allProducts, filteredProducts);
+
+  // 获取用户信息
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+
+  // 删除状态
+  const [isDeletingProduct, setIsDeletingProduct] = React.useState(false);
+  const [deletingProductId, setDeletingProductId] = React.useState<string | null>(null);
+  
+  // 服务实例
+  const productService = useMemo(() => new ProductService(), []);
 
   // 更新过滤选项
   const setFilterOptions = useCallback((options: Partial<ProductFilterOptions>) => {
@@ -140,6 +158,36 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
     };
   }, [isAuthenticated]);
 
+  // 删除产品
+  const deleteProduct = useCallback(async (productId: string) => {
+    if (!isAuthenticated || isDeletingProduct || !userId) return;
+
+    try {
+      setIsDeletingProduct(true);
+      setDeletingProductId(productId);
+
+      // 乐观更新：立即从列表中移除产品
+      const productToDelete = allProducts.find(p => p.product_id === productId);
+      setAllProducts(prev => prev.filter(p => p.product_id !== productId));
+
+      // 调用服务删除产品
+      const result = await productService.deleteUserProduct(userId, productId);
+
+      if (!result.success) {
+        // 删除失败，回滚更改
+        if (productToDelete) {
+          setAllProducts(prev => [...prev, productToDelete]);
+        }
+        throw new Error(result.error?.message || '删除失败');
+      }
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setIsDeletingProduct(false);
+      setDeletingProductId(null);
+    }
+  }, [isAuthenticated, isDeletingProduct, allProducts, productService, userId, handleError]);
+
   const value = useMemo(() => ({
     products: allProducts,
     filteredProducts,
@@ -155,7 +203,10 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
     refreshProducts,
     invalidateCache,
     cacheStatus: getCacheStatus(),
-    ...stats
+    ...stats,
+    deleteProduct,
+    isDeletingProduct,
+    deletingProductId,
   }), [
     allProducts,
     filteredProducts,
@@ -166,7 +217,10 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
     isFetching,
     error,
     stats,
-    getCacheStatus
+    getCacheStatus,
+    deleteProduct,
+    isDeletingProduct,
+    deletingProductId,
   ]);
 
   return (
