@@ -1,44 +1,15 @@
 import React from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { PageHeader } from '@/components/PageHeader';
-import { CategoryCard } from '@/components/vanity-table/CategoryCard';
-import { AllProductsCard } from '@/components/vanity-table/AllProductsCard';
+import { CategoryCard } from '@/components/vanity/CategoryCard';
+import { AllProductsCard } from '@/components/vanity/AllProductsCard';
 import { router } from 'expo-router';
 import { ProductCategory } from '@/types/products';
+import { useVanityTableStats } from '@/hooks/vanity/useVanityTableStats';
 
-const categories = [
-  {
-    id: 'MAKEUP',
-    name: '彩妆',
-    count: 8,
-    colors: ['#FFB6C1', '#FF69B4'],
-    icon: 'palette',
-    subCategories: [ProductCategory.BASE, ProductCategory.EYE, ProductCategory.LIP]
-  },
-  {
-    id: ProductCategory.SKINCARE,
-    name: '护肤',
-    count: 12,
-    colors: ['#E6E6FA', '#9370DB'],
-    icon: 'spa',
-  },
-  {
-    id: ProductCategory.FRAGRANCE,
-    name: '香水',
-    count: 3,
-    colors: ['#98FB98', '#3CB371'],
-    icon: 'opacity',
-  },
-  {
-    id: ProductCategory.TOOLS,
-    name: '工具',
-    count: 5,
-    colors: ['#87CEEB', '#4169E1'],
-    icon: 'brush',
-  }
-];
+export function VanityTableStats() {
+  const { categories, totalProducts } = useVanityTableStats();
 
-export default function VanityTableScreen() {
   const handleCategoryPress = (categoryId: string) => {
     if (categoryId === 'MAKEUP') {
       router.push({
@@ -63,8 +34,6 @@ export default function VanityTableScreen() {
     });
   };
 
-  const totalProducts = categories.reduce((sum, category) => sum + category.count, 0);
-  
   return (
     <SafeAreaView style={styles.container}>
       <PageHeader 

@@ -35,7 +35,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      initialRouteName="vanity-table"
+      initialRouteName="vanity"
       screenOptions={{
         tabBarActiveTintColor: '#FF6B6B',
         tabBarInactiveTintColor: '#999999',
@@ -72,7 +72,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="vanity-table"
+        name="vanity"
         options={{
           title: '美妆桌',
           tabBarIcon: () => null,
