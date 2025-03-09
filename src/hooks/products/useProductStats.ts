@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { UserProduct } from '@/lib/supabase/types';
+import { UserProduct } from '@/types/products';
 import { ProductCategory, ProductStatus } from '@/types/products';
 
 export interface ProductStats {

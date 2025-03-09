@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode, useCallback, useEffect } from 'react';
 import { ProductCategory } from '@/types/products';
-import { UserProduct } from '@/lib/supabase/types';
+import { UserProduct } from '@/types/products';
 import { useProductData } from '@/hooks/products/useProductData';
 import { useProductFilter } from '@/hooks/products/useProductFilter';
 import { useProductStats, ProductStats } from '@/hooks/products/useProductStats';

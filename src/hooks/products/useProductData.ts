@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { ProductService } from '@/services/product.service';
-import { UserProduct } from '@/lib/supabase/types';
+import { UserProduct } from '@/types/products';
 import { productCache } from '@/utils/products/cache';
 
 export interface UseProductDataOptions {

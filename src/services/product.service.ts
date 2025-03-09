@@ -1,5 +1,5 @@
 import { ProductRepository, ProductFilters } from '@/lib/supabase/repositories/products';
-import { UserProduct } from '@/lib/supabase/types';
+import { UserProduct } from '@/types/products';
 import { ProductCategory } from '@/types/products';
 import { useAuth } from '@/hooks/useAuth';
 

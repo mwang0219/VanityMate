@@ -16,5 +16,4 @@ export type { User, Session, AuthError };
 export type { Database };
 
 // 导出其他模块
-export * from './types';
 export * from './errors'; 
