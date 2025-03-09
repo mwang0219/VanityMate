@@ -74,11 +74,21 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
   const { fetchProducts, invalidateCache, getCacheStatus, isAuthenticated } = useProductData();
 
   const { filteredProducts } = useProductFilter(allProducts, filterOptions);
+  console.log('[ProductsContext] 过滤结果:', {
+    totalProducts: allProducts.length,
+    filteredCount: filteredProducts.length,
+    filterOptions
+  });
 
   const stats = useProductStats(allProducts, filteredProducts);
 
   // 更新过滤选项
   const setFilterOptions = useCallback((options: Partial<ProductFilterOptions>) => {
+    console.log('[ProductsContext] 更新过滤选项:', {
+      current: filterOptions,
+      new: options,
+      merged: { ...filterOptions, ...options }
+    });
     setFilterOptionsState(prev => ({
       ...prev,
       ...options

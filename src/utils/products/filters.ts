@@ -16,13 +16,51 @@ export function filterByCategory(
   products: UserProduct[],
   category: ProductCategory | 'MAKEUP' | null
 ): UserProduct[] {
-  if (!category) return products;
-  return products.filter(product => {
-    if (category === 'MAKEUP') {
-      return product.category.is_makeup;
-    }
-    return product.category_id === category;
+  console.log('[filterByCategory] 开始过滤:', {
+    totalProducts: products.length,
+    category,
+    sampleProduct: products[0]?.product
   });
+
+  if (!category) {
+    console.log('[filterByCategory] 没有分类，返回所有产品');
+    return products;
+  }
+
+  const filtered = products.filter(product => {
+    if (!product.product) {
+      console.log('[filterByCategory] 警告: 产品缺少 product 属性:', product);
+      return false;
+    }
+
+    if (category === 'MAKEUP') {
+      // MAKEUP 类别包括 BASE, EYE, LIP
+      const isMakeup = ['BASE', 'EYE', 'LIP'].includes(product.product.category_id);
+      console.log('[filterByCategory] MAKEUP 过滤:', {
+        productId: product.id,
+        categoryId: product.product.category_id,
+        isMakeup
+      });
+      return isMakeup;
+    }
+
+    const matches = product.product.category_id === category;
+    console.log('[filterByCategory] 分类匹配:', {
+      productId: product.id,
+      productCategory: product.product.category_id,
+      targetCategory: category,
+      matches
+    });
+    return matches;
+  });
+
+  console.log('[filterByCategory] 过滤结果:', {
+    totalProducts: products.length,
+    filteredCount: filtered.length,
+    category
+  });
+
+  return filtered;
 }
 
 /**
@@ -36,9 +74,10 @@ export function filterBySearch(
   
   const query = searchQuery.toLowerCase().trim();
   return products.filter(product => 
-    product.name.toLowerCase().includes(query) ||
-    product.brand?.toLowerCase().includes(query) ||
-    product.description?.toLowerCase().includes(query)
+    product.product.name.toLowerCase().includes(query) ||
+    product.product.brand?.toLowerCase().includes(query) ||
+    product.product.description?.toLowerCase().includes(query) ||
+    product.notes?.toLowerCase().includes(query)
   );
 }
 
@@ -53,9 +92,9 @@ export function filterByExpiration(
   const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
   return products.filter(product => {
-    if (!product.expiration_date) return true;
+    if (!product.expiry_date) return true;
     
-    const expirationDate = new Date(product.expiration_date);
+    const expirationDate = new Date(product.expiry_date);
     const isExpired = expirationDate < now;
     const isExpiring = !isExpired && expirationDate <= thirtyDaysFromNow;
 
@@ -73,7 +112,12 @@ export function filterByStatus(
   status: 'unopened' | 'in_use' | 'finished'
 ): UserProduct[] {
   if (!status) return products;
-  return products.filter(product => product.status === status);
+  const statusMap = {
+    'unopened': 1,
+    'in_use': 2,
+    'finished': 3
+  };
+  return products.filter(product => product.status === statusMap[status]);
 }
 
 /**
@@ -83,9 +127,16 @@ export function applyFilters(
   products: UserProduct[],
   options: ProductFilterOptions
 ): UserProduct[] {
+  console.log('[applyFilters] 开始应用过滤条件:', {
+    totalProducts: products.length,
+    options,
+    sampleProduct: products[0]
+  });
+
   let filtered = [...products];
 
   if (options.category) {
+    console.log('[applyFilters] 应用分类过滤:', options.category);
     filtered = filterByCategory(filtered, options.category);
   }
 
@@ -103,6 +154,12 @@ export function applyFilters(
   if (options.status) {
     filtered = filterByStatus(filtered, options.status);
   }
+
+  console.log('[applyFilters] 过滤完成:', {
+    originalCount: products.length,
+    filteredCount: filtered.length,
+    appliedOptions: Object.keys(options).filter(key => options[key] !== undefined)
+  });
 
   return filtered;
 } 
