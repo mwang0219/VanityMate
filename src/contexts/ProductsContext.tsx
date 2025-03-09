@@ -2,13 +2,24 @@ import React, { createContext, useContext, ReactNode, useCallback, useEffect } f
 import { ProductCategory } from '@/types/products';
 import { UserProduct } from '@/lib/supabase/types';
 import { useProductData } from '@/hooks/products/useProductData';
+import { useProductFilter } from '@/hooks/products/useProductFilter';
+import { useProductStats, ProductStats } from '@/hooks/products/useProductStats';
+import { useProductState, ProductLoadingState, ProductError } from '@/hooks/products/useProductState';
 
-interface ProductsContextValue {
+interface ProductsContextValue extends ProductStats {
   // 数据状态
   products: UserProduct[];
   filteredProducts: UserProduct[];
+  
+  // 加载状态
   isLoading: boolean;
-  error: Error | null;
+  isInitialLoading: boolean;
+  isRefreshing: boolean;
+  isFetching: boolean;
+  
+  // 错误状态
+  error: ProductError | null;
+  clearError: () => void;
   
   // 分类状态
   selectedCategory: ProductCategory | 'MAKEUP' | null;
@@ -31,65 +42,122 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
   const [selectedCategory, setSelectedCategory] = React.useState<ProductCategory | 'MAKEUP' | null>(initialCategory);
   const [allProducts, setAllProducts] = React.useState<UserProduct[]>([]);
   
-  // 使用新的 useProductData hook
-  const { 
-    fetchProducts, 
-    invalidateCache, 
-    isLoading, 
-    error 
-  } = useProductData();
+  // 使用状态管理 hook
+  const {
+    isLoading,
+    isInitialLoading,
+    isRefreshing,
+    isFetching,
+    error,
+    startLoading,
+    stopLoading,
+    handleError,
+    clearError
+  } = useProductState();
+
+  // 使用其他 hooks
+  const { fetchProducts, invalidateCache, isAuthenticated } = useProductData();
+
+  const { filteredProducts } = useProductFilter(allProducts, { 
+    category: selectedCategory 
+  });
+
+  const stats = useProductStats(allProducts, filteredProducts);
 
   // 获取所有产品
   const refreshProducts = useCallback(async () => {
-    const products = await fetchProducts(true);
-    if (products) {
-      setAllProducts(products);
-    }
-  }, [fetchProducts]);
+    if (!isAuthenticated) return;
 
-  // 根据分类筛选产品
-  const filteredProducts = React.useMemo(() => {
-    if (!selectedCategory) return allProducts;
-    
-    if (selectedCategory === 'MAKEUP') {
-      return allProducts.filter(item => 
-        item.product && ['BASE', 'EYE', 'LIP'].includes(item.product.category_id)
-      );
+    try {
+      startLoading('isRefreshing');
+      const products = await fetchProducts(true);
+      setAllProducts(products);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading('isRefreshing');
     }
-    
-    return allProducts.filter(item => 
-      item.product && item.product.category_id === selectedCategory
-    );
-  }, [allProducts, selectedCategory]);
+  }, [fetchProducts, startLoading, stopLoading, handleError, isAuthenticated]);
 
   // 初始加载
   useEffect(() => {
+    let isMounted = true;
+
     const loadProducts = async () => {
-      const products = await fetchProducts();
-      if (products) {
-        setAllProducts(products);
+      // 未登录时不加载数据
+      if (!isAuthenticated) {
+        if (allProducts.length > 0) {
+          setAllProducts([]);
+        }
+        return;
+      }
+
+      try {
+        // 只有在没有数据时才显示加载状态
+        if (allProducts.length === 0) {
+          startLoading('isInitialLoading');
+        }
+        
+        const products = await fetchProducts();
+        if (isMounted && products.length > 0) {
+          setAllProducts(products);
+        }
+      } catch (err) {
+        if (isMounted) {
+          handleError(err);
+        }
+      } finally {
+        if (isMounted) {
+          stopLoading('isInitialLoading');
+        }
       }
     };
+
     loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated]); // 只在认证状态改变时重新加载
+
+  // 监听 fetchProducts 的变化
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchProducts().then(products => {
+        setAllProducts(products);
+      }).catch(() => {
+        // 忽略错误，因为主要的错误处理在上面的 effect 中
+      });
+    }
   }, [fetchProducts]);
 
   const value = React.useMemo(() => ({
     products: allProducts,
     filteredProducts,
     isLoading,
+    isInitialLoading,
+    isRefreshing,
+    isFetching,
     error,
+    clearError,
     selectedCategory,
     setSelectedCategory,
     refreshProducts,
-    invalidateCache
+    invalidateCache,
+    ...stats
   }), [
     allProducts,
     filteredProducts,
     isLoading,
+    isInitialLoading,
+    isRefreshing,
+    isFetching,
     error,
+    clearError,
     selectedCategory,
     refreshProducts,
-    invalidateCache
+    invalidateCache,
+    stats
   ]);
 
   return (
