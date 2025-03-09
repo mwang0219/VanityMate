@@ -14,9 +14,12 @@ export interface ProductFilterOptions {
  */
 export function filterByCategory(
   products: UserProduct[],
-  category: ProductCategory | 'MAKEUP' | null
+  category: ProductCategory | 'MAKEUP' | null | 'all'
 ): UserProduct[] {
-  if (!category) return products;
+  // 处理全部产品的情况
+  if (category === null || category === undefined || category === 'all') {
+    return products;
+  }
 
   const filtered = products.filter(product => {
     if (!product.product) return false;
@@ -96,7 +99,7 @@ export function applyFilters(
 ): UserProduct[] {
   let filtered = [...products];
 
-  if (options.category) {
+  if (options.category !== undefined) {
     filtered = filterByCategory(filtered, options.category);
   }
 

@@ -13,7 +13,9 @@ export default function ProductsScreen() {
 
   // 当 category 改变时更新过滤器
   useEffect(() => {
-    setFilterOptions({ category: category || null });
+    // 确保 category 是有效值或 null
+    const validCategory = category ? (category as ProductCategory | 'MAKEUP') : null;
+    setFilterOptions({ category: validCategory });
   }, [category, setFilterOptions]);
 
   return (
