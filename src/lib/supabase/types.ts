@@ -21,6 +21,7 @@ export interface UserProduct {
   id: string;
   user_id: string;
   product_id: string;
+  product: Product;
   status: number;
   batch_code: string | null;
   purchase_date: string | null;

@@ -8,11 +8,12 @@ import { ProductCategory } from '@/types/products';
 
 const categories = [
   {
-    id: ProductCategory.BASE,
+    id: 'MAKEUP',
     name: '彩妆',
     count: 8,
     colors: ['#FFB6C1', '#FF69B4'],
     icon: 'palette',
+    subCategories: [ProductCategory.BASE, ProductCategory.EYE, ProductCategory.LIP]
   },
   {
     id: ProductCategory.SKINCARE,
@@ -38,11 +39,21 @@ const categories = [
 ];
 
 export default function VanityTableScreen() {
-  const handleCategoryPress = (categoryId: ProductCategory) => {
-    router.push({
-      pathname: '/products',
-      params: { category: categoryId }
-    });
+  const handleCategoryPress = (categoryId: string) => {
+    if (categoryId === 'MAKEUP') {
+      router.push({
+        pathname: '/products',
+        params: { 
+          category: 'MAKEUP',
+          subCategories: JSON.stringify([ProductCategory.BASE, ProductCategory.EYE, ProductCategory.LIP])
+        }
+      });
+    } else {
+      router.push({
+        pathname: '/products',
+        params: { category: categoryId }
+      });
+    }
   };
 
   const handleAllProductsPress = () => {
@@ -77,7 +88,7 @@ export default function VanityTableScreen() {
           count={totalProducts}
           onPress={handleAllProductsPress}
         />
-        </View>
+      </View>
     </SafeAreaView>
   );
 }

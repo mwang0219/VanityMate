@@ -2,7 +2,7 @@ export interface Product {
   id: string;
   name: string;
   brand: string;
-  category_id: number;
+  category_id: string;
   subcategory_id?: number;
   description?: string;
   image_url?: string;
@@ -45,7 +45,7 @@ export enum ProductStatus {
 
 export interface ProductSubcategory {
   id: number;
-  category_id: number;
+  category_id: string;
   name: string;
   description?: string;
 } 
