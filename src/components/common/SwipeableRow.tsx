@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { forwardRef } from 'react';
 import { Animated, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Swipeable, GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -14,9 +14,7 @@ export interface SwipeAction {
   textColor?: string;
 }
 
-export function SwipeableRow({ children, rightActions }: SwipeableRowProps) {
-  const swipeableRef = useRef<Swipeable>(null);
-
+const SwipeableRowComponent = forwardRef<Swipeable, SwipeableRowProps>(({ children, rightActions }, ref) => {
   const renderRightActions = (
     _progress: Animated.AnimatedInterpolation<number>,
     dragX: Animated.AnimatedInterpolation<number>
@@ -34,10 +32,7 @@ export function SwipeableRow({ children, rightActions }: SwipeableRowProps) {
           <TouchableOpacity
             key={index}
             style={{ flex: 1 }}
-            onPress={() => {
-              action.onPress();
-              swipeableRef.current?.close();
-            }}
+            onPress={action.onPress}
           >
             <Animated.View
               style={[
@@ -66,7 +61,7 @@ export function SwipeableRow({ children, rightActions }: SwipeableRowProps) {
   return (
     <GestureHandlerRootView>
       <Swipeable
-        ref={swipeableRef}
+        ref={ref}
         friction={2}
         enableTrackpadTwoFingerGesture
         rightThreshold={40}
@@ -76,7 +71,11 @@ export function SwipeableRow({ children, rightActions }: SwipeableRowProps) {
       </Swipeable>
     </GestureHandlerRootView>
   );
-}
+});
+
+SwipeableRowComponent.displayName = 'SwipeableRow';
+
+export const SwipeableRow = SwipeableRowComponent;
 
 const styles = StyleSheet.create({
   rightActionsContainer: {
