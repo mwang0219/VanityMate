@@ -1,10 +1,11 @@
 import React, { useCallback } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { useProducts } from '@/contexts/ProductsContext';
-import { ProductCard } from '@/components/products/ProductCard';
+import { SwipeableProductCard } from '@/components/products/SwipeableProductCard';
 import { ThemedText } from '@/components/ThemedText';
 import { router } from 'expo-router';
 import { UserProduct } from '@/types/products';
+import { colors } from '@/constants/theme';
 
 export function ProductList() {
   const { filteredProducts: products, isLoading, error, selectedCategory, refreshProducts } = useProducts();
@@ -23,7 +24,7 @@ export function ProductList() {
   if (isLoading && !refreshing) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#FF6B6B" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -51,7 +52,7 @@ export function ProductList() {
       data={products}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <ProductCard
+        <SwipeableProductCard
           userProduct={item as UserProduct}
           onPress={() => handleProductPress(item.id)}
           showLastUsed
@@ -62,8 +63,8 @@ export function ProductList() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={handleRefresh}
-          colors={['#FF6B6B']}
-          tintColor="#FF6B6B"
+          colors={[colors.primary]}
+          tintColor={colors.primary}
         />
       }
       showsVerticalScrollIndicator={false}
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: '#FF6B6B',
+    color: colors.danger,
     textAlign: 'center',
   },
   emptyText: {
