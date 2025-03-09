@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useCallback, useEffect, useMemo } from 'react';
 import { ProductCategory } from '@/types/products';
 import { UserProduct } from '@/types/products';
 import { useProductData } from '@/hooks/products/useProductData';
@@ -7,36 +7,35 @@ import { useProductStats, ProductStats } from '@/hooks/products/useProductStats'
 import { useProductState, ProductLoadingState, ProductError } from '@/hooks/products/useProductState';
 import { ProductFilterOptions } from '@/utils/products/filters';
 
+interface CacheStatus {
+  exists: boolean;
+  isValid: boolean;
+  isExpired: boolean;
+  age: number;
+}
+
 interface ProductsContextValue extends ProductStats {
-  // 数据状态
+  // 产品数据
   products: UserProduct[];
   filteredProducts: UserProduct[];
+  
+  // 过滤器状态
+  filterOptions: ProductFilterOptions;
+  setFilterOptions: (options: Partial<ProductFilterOptions>) => void;
+  selectedCategory: ProductCategory | 'MAKEUP' | 'all' | null;
   
   // 加载状态
   isLoading: boolean;
   isInitialLoading: boolean;
   isRefreshing: boolean;
   isFetching: boolean;
-  
-  // 错误状态
   error: ProductError | null;
   clearError: () => void;
-  
-  // 过滤状态
-  filterOptions: ProductFilterOptions;
-  setFilterOptions: (options: Partial<ProductFilterOptions>) => void;
-  
-  // 缓存状态
-  cacheStatus: {
-    exists: boolean;
-    isValid: boolean;
-    isExpired: boolean;
-    age: number;
-  };
   
   // 操作方法
   refreshProducts: () => Promise<void>;
   invalidateCache: () => void;
+  cacheStatus: CacheStatus;
 }
 
 const ProductsContext = createContext<ProductsContextValue | undefined>(undefined);
@@ -141,17 +140,18 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
     };
   }, [isAuthenticated]);
 
-  const value = React.useMemo(() => ({
+  const value = useMemo(() => ({
     products: allProducts,
     filteredProducts,
+    filterOptions,
+    setFilterOptions,
+    selectedCategory: filterOptions.category || null,
     isLoading,
     isInitialLoading,
     isRefreshing,
     isFetching,
     error,
     clearError,
-    filterOptions,
-    setFilterOptions,
     refreshProducts,
     invalidateCache,
     cacheStatus: getCacheStatus(),
@@ -159,18 +159,14 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
   }), [
     allProducts,
     filteredProducts,
+    filterOptions,
     isLoading,
     isInitialLoading,
     isRefreshing,
     isFetching,
     error,
-    clearError,
-    filterOptions,
-    setFilterOptions,
-    refreshProducts,
-    invalidateCache,
-    getCacheStatus,
-    stats
+    stats,
+    getCacheStatus
   ]);
 
   return (
