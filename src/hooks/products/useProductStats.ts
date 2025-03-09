@@ -16,6 +16,7 @@ export interface ProductStats {
   categoryStats: {
     [key in ProductCategory]: number;
   };
+  makeupCount: number; // 添加彩妆总数
   
   // 到期提醒
   expiringCount: number;  // 30天内到期
@@ -23,7 +24,10 @@ export interface ProductStats {
 }
 
 // 计算分类统计
-function calculateCategoryStats(products: UserProduct[]): { [key in ProductCategory]: number } {
+function calculateCategoryStats(products: UserProduct[]): { 
+  stats: { [key in ProductCategory]: number };
+  makeupCount: number;
+} {
   const stats = {
     [ProductCategory.BASE]: 0,
     [ProductCategory.EYE]: 0,
@@ -39,7 +43,12 @@ function calculateCategoryStats(products: UserProduct[]): { [key in ProductCateg
     }
   });
 
-  return stats;
+  // 计算彩妆总数（BASE + EYE + LIP）
+  const makeupCount = stats[ProductCategory.BASE] + 
+                     stats[ProductCategory.EYE] + 
+                     stats[ProductCategory.LIP];
+
+  return { stats, makeupCount };
 }
 
 // 计算即将到期的产品数量（30天内）
@@ -68,7 +77,9 @@ export function useProductStats(
   filteredProducts: UserProduct[]
 ): ProductStats {
   return useMemo(() => {
-    const stats: ProductStats = {
+    const { stats: categoryStats, makeupCount } = calculateCategoryStats(products);
+
+    return {
       // 基础统计
       totalCount: products.length,
       filteredCount: filteredProducts.length,
@@ -79,13 +90,12 @@ export function useProductStats(
       finishedCount: products.filter(p => p.status === ProductStatus.FINISHED).length,
       
       // 分类统计
-      categoryStats: calculateCategoryStats(products),
+      categoryStats,
+      makeupCount,
       
       // 到期情况
       expiringCount: calculateExpiringCount(products),
       expiredCount: calculateExpiredCount(products),
     };
-    
-    return stats;
   }, [products, filteredProducts]);
 } 

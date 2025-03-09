@@ -1,5 +1,7 @@
 import { useProducts } from '@/contexts/ProductsContext';
 import { ProductCategory } from '@/types/products';
+import { useMemo } from 'react';
+import { useProductStats } from '@/hooks/products/useProductStats';
 
 export interface CategoryItem {
   id: string;
@@ -16,19 +18,15 @@ export interface VanityTableStats {
 }
 
 export function useVanityTableStats(): VanityTableStats {
-  const { 
-    totalCount = 0,
-    makeupCount = 0,
-    skincareCount = 0,
-    fragranceCount = 0,
-    toolsCount = 0
-  } = useProducts();
+  const { products = [], filteredProducts = [] } = useProducts();
+  const stats = useProductStats(products, filteredProducts);
 
-  const categories: CategoryItem[] = [
+  // 使用 useMemo 缓存分类配置
+  const categories = useMemo(() => [
     {
       id: 'MAKEUP',
       name: '彩妆',
-      count: makeupCount,
+      count: stats.makeupCount,
       colors: ['#FFB6C1', '#FF69B4'],
       icon: 'palette',
       subCategories: [ProductCategory.BASE, ProductCategory.EYE, ProductCategory.LIP]
@@ -36,28 +34,28 @@ export function useVanityTableStats(): VanityTableStats {
     {
       id: ProductCategory.SKINCARE,
       name: '护肤',
-      count: skincareCount,
+      count: stats.categoryStats[ProductCategory.SKINCARE],
       colors: ['#E6E6FA', '#9370DB'],
       icon: 'spa',
     },
     {
       id: ProductCategory.FRAGRANCE,
       name: '香水',
-      count: fragranceCount,
+      count: stats.categoryStats[ProductCategory.FRAGRANCE],
       colors: ['#98FB98', '#3CB371'],
       icon: 'opacity',
     },
     {
       id: ProductCategory.TOOLS,
       name: '工具',
-      count: toolsCount,
+      count: stats.categoryStats[ProductCategory.TOOLS],
       colors: ['#87CEEB', '#4169E1'],
       icon: 'brush',
     }
-  ];
+  ], [stats]);
 
   return {
     categories,
-    totalProducts: totalCount
+    totalProducts: stats.totalCount
   };
 } 
