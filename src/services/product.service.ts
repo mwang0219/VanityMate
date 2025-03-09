@@ -54,21 +54,21 @@ export class ProductService {
   /**
    * 删除用户的产品
    * @param userId 用户ID
-   * @param productId 产品ID
+   * @param id 用户产品记录ID
    * @throws {ValidationError} 当参数无效时
    * @returns 删除操作的结果
    */
-  async deleteUserProduct(userId: string, productId: string): Promise<DeleteUserProductResult> {
+  async deleteUserProduct(userId: string, id: string): Promise<DeleteUserProductResult> {
     // 参数验证
     if (!userId?.trim()) {
       throw new ValidationError('用户ID不能为空');
     }
-    if (!productId?.trim()) {
-      throw new ValidationError('产品ID不能为空');
+    if (!id?.trim()) {
+      throw new ValidationError('产品记录ID不能为空');
     }
 
     // 调用仓库层删除方法
-    const result = await this.repository.deleteUserProduct(userId, productId);
+    const result = await this.repository.deleteUserProduct(userId, id);
 
     // 如果删除失败，抛出适当的错误
     if (!result.success && result.error) {

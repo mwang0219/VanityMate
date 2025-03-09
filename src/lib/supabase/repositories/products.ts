@@ -116,97 +116,41 @@ export class ProductRepository extends BaseRepository<UserProduct> {
   }
 
   /**
-   * 删除用户产品
+   * 删除用户的产品记录
    * @param userId 用户ID
-   * @param productId 产品ID
-   * @returns 删除操作的结果
+   * @param id 用户产品记录ID
    */
   async deleteUserProduct(
-    userId: string, 
-    productId: string
+    userId: string,
+    id: string
   ): Promise<DeleteUserProductResult> {
-    if (!userId || !productId) {
-      const error = new ValidationError('用户ID和产品ID不能为空');
-      return {
-        success: false,
-        error: {
-          code: 'INVALID_PARAMS',
-          message: error.message,
-          details: error
-        }
-      };
-    }
-
     try {
-      // 先检查记录是否存在
-      const { data: existingProduct, error: checkError } = await this.supabase
-        .from('user_products')
-        .select('id')
-        .match({
-          user_id: userId,
-          product_id: productId
-        })
-        .single();
-
-      if (checkError) {
-        const error = SupabaseError.fromDatabaseError(checkError);
-        return {
-          success: false,
-          error: {
-            code: error.code,
-            message: error.message,
-            details: error.details
-          }
-        };
-      }
-
-      if (!existingProduct) {
-        const error = new ValidationError('未找到要删除的产品');
-        return {
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: error.message,
-            details: error
-          }
-        };
-      }
-
-      const { error: deleteError } = await this.supabase
+      const { error } = await this.supabase
         .from('user_products')
         .delete()
         .match({
           user_id: userId,
-          product_id: productId
+          id: id
         });
 
-      if (deleteError) {
-        const error = SupabaseError.fromDatabaseError(deleteError);
+      if (error) {
         return {
           success: false,
           error: {
-            code: error.code,
-            message: error.message,
-            details: error.details
+            code: error.code === 'PGRST116' ? 'NOT_FOUND' : 'UNKNOWN',
+            message: error.message
           }
         };
       }
 
-      return {
-        success: true,
-        deletedId: productId
-      };
+      return { success: true };
     } catch (error) {
-      const supabaseError = error instanceof Error 
-        ? new SupabaseError(error.message, 'UNEXPECTED_ERROR', error)
-        : new SupabaseError('删除产品时发生意外错误', 'UNEXPECTED_ERROR', error);
-
+      console.error('删除用户产品时发生错误:', error);
       return {
         success: false,
         error: {
-          code: supabaseError.code,
-          message: supabaseError.message,
-          details: supabaseError.details
+          code: 'UNKNOWN',
+          message: '删除产品时发生未知错误'
         }
       };
     }

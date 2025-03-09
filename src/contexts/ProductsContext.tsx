@@ -167,8 +167,8 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
       setDeletingProductId(productId);
 
       // 乐观更新：立即从列表中移除产品
-      const productToDelete = allProducts.find(p => p.product_id === productId);
-      setAllProducts(prev => prev.filter(p => p.product_id !== productId));
+      const productToDelete = allProducts.find(p => p.id === productId);
+      setAllProducts(prev => prev.filter(p => p.id !== productId));
 
       // 调用服务删除产品
       const result = await productService.deleteUserProduct(userId, productId);
