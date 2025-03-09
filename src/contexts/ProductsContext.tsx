@@ -1,19 +1,38 @@
-import React, { createContext, useContext, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, ReactNode, useCallback, useEffect } from 'react';
 import { ProductCategory } from '@/types/products';
 import { UserProduct } from '@/lib/supabase/types';
-import { ProductService } from '@/services/product.service';
-import { useAuth } from '@/hooks/useAuth';
+import { useProductData } from '@/hooks/products/useProductData';
+import { useProductFilter } from '@/hooks/products/useProductFilter';
+import { useProductStats, ProductStats } from '@/hooks/products/useProductStats';
+import { useProductState, ProductLoadingState, ProductError } from '@/hooks/products/useProductState';
+import { ProductFilterOptions } from '@/utils/products/filters';
 
-interface ProductsContextValue {
+interface ProductsContextValue extends ProductStats {
   // 数据状态
   products: UserProduct[];
   filteredProducts: UserProduct[];
-  isLoading: boolean;
-  error: Error | null;
   
-  // 分类状态
-  selectedCategory: ProductCategory | 'MAKEUP' | null;
-  setSelectedCategory: (category: ProductCategory | 'MAKEUP' | null) => void;
+  // 加载状态
+  isLoading: boolean;
+  isInitialLoading: boolean;
+  isRefreshing: boolean;
+  isFetching: boolean;
+  
+  // 错误状态
+  error: ProductError | null;
+  clearError: () => void;
+  
+  // 过滤状态
+  filterOptions: ProductFilterOptions;
+  setFilterOptions: (options: Partial<ProductFilterOptions>) => void;
+  
+  // 缓存状态
+  cacheStatus: {
+    exists: boolean;
+    isValid: boolean;
+    isExpired: boolean;
+    age: number;
+  };
   
   // 操作方法
   refreshProducts: () => Promise<void>;
@@ -29,144 +48,129 @@ interface ProductsProviderProps {
 
 export function ProductsProvider({ children, initialCategory = null }: ProductsProviderProps) {
   // 状态管理
-  const [selectedCategory, setSelectedCategory] = React.useState<ProductCategory | 'MAKEUP' | null>(initialCategory);
+  const [filterOptions, setFilterOptionsState] = React.useState<ProductFilterOptions>({
+    category: initialCategory,
+    searchQuery: '',
+    isExpired: false,
+    isExpiring: false,
+    status: undefined
+  });
   const [allProducts, setAllProducts] = React.useState<UserProduct[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [error, setError] = React.useState<Error | null>(null);
-  const [lastFetchTime, setLastFetchTime] = React.useState<number>(0);
   
-  const { user } = useAuth();
-  const productService = React.useMemo(() => new ProductService(), []);
+  // 使用状态管理 hook
+  const {
+    isLoading,
+    isInitialLoading,
+    isRefreshing,
+    isFetching,
+    error,
+    startLoading,
+    stopLoading,
+    handleError,
+    clearError
+  } = useProductState();
+
+  // 使用其他 hooks
+  const { fetchProducts, invalidateCache, getCacheStatus, isAuthenticated } = useProductData();
+
+  const { filteredProducts } = useProductFilter(allProducts, filterOptions);
+
+  const stats = useProductStats(allProducts, filteredProducts);
+
+  // 更新过滤选项
+  const setFilterOptions = useCallback((options: Partial<ProductFilterOptions>) => {
+    setFilterOptionsState(prev => ({
+      ...prev,
+      ...options
+    }));
+  }, []);
 
   // 获取所有产品
-  const fetchAllProducts = useCallback(async (force: boolean = false) => {
-    console.log('[fetchAllProducts] 开始获取产品:', {
-      force,
-      hasUser: !!user?.id,
-      currentProductsCount: allProducts.length,
-      lastFetchTime,
-    });
-
-    if (!user?.id) {
-      setError(new Error('用户未登录'));
-      setIsLoading(false);
-      return;
-    }
-
-    // 如果数据已存在且未超时，直接返回
-    const now = Date.now();
-    if (!force && allProducts.length > 0 && (now - lastFetchTime) < 5 * 60 * 1000) {
-      console.log('[fetchAllProducts] 使用缓存数据');
-      return;
-    }
+  const refreshProducts = useCallback(async () => {
+    if (!isAuthenticated) return;
 
     try {
-      console.log('[fetchAllProducts] 开始加载数据...');
-      setIsLoading(true);
-      setError(null);
-      const products = await productService.getAllUserProducts(user.id);
-      console.log('[fetchAllProducts] 数据加载完成:', {
-        productsCount: products.length,
-      });
+      startLoading('isRefreshing');
+      const products = await fetchProducts({ skipCache: true });
       setAllProducts(products);
-      setLastFetchTime(now);
     } catch (err) {
-      console.error('[fetchAllProducts] 加载失败:', err);
-      setError(err instanceof Error ? err : new Error('获取产品列表失败'));
+      handleError(err);
     } finally {
-      setIsLoading(false);
+      stopLoading('isRefreshing');
     }
-  }, [productService, lastFetchTime, allProducts.length, user?.id]);
-
-  // 根据分类筛选产品
-  const filteredProducts = React.useMemo(() => {
-    console.log('[filteredProducts] 开始过滤:', {
-      selectedCategory,
-      allProductsCount: allProducts.length,
-      isLoading,
-    });
-
-    // 如果数据还在加载或没有数据，直接返回空数组
-    if (isLoading || allProducts.length === 0) {
-      console.log('[filteredProducts] 数据未就绪，返回空数组');
-      return [];
-    }
-
-    if (!selectedCategory) {
-      console.log('[filteredProducts] 没有选择分类，返回所有产品');
-      return allProducts;
-    }
-    
-    if (selectedCategory === 'MAKEUP') {
-      const makeupProducts = allProducts.filter(item => 
-        item.product && ['BASE', 'EYE', 'LIP'].includes(item.product.category_id)
-      );
-      console.log('[filteredProducts] 彩妆产品过滤结果:', {
-        count: makeupProducts.length,
-        categories: makeupProducts.map(p => p.product?.category_id),
-      });
-      return makeupProducts;
-    }
-    
-    const categoryProducts = allProducts.filter(item => 
-      item.product && item.product.category_id === selectedCategory
-    );
-    console.log('[filteredProducts] 分类产品过滤结果:', {
-      category: selectedCategory,
-      count: categoryProducts.length,
-      matchedIds: categoryProducts.map(p => p.product?.category_id),
-    });
-    return categoryProducts;
-  }, [allProducts, selectedCategory]);
+  }, [fetchProducts, startLoading, stopLoading, handleError, isAuthenticated]);
 
   // 初始加载
-  React.useEffect(() => {
-    // 只在 allProducts 为空时才加载数据
-    if (allProducts.length === 0) {
-      console.log('[ProductsContext] 首次加载，开始初始化');
-      fetchAllProducts();
-    } else {
-      console.log('[ProductsContext] 已有数据，跳过初始化');
-    }
-    
-    return () => {
-      // 不要在组件卸载时清除数据，保持数据持久化
-      console.log('[ProductsContext] 组件卸载，保持数据状态');
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProducts = async () => {
+      // 未登录时不加载数据
+      if (!isAuthenticated) {
+        if (allProducts.length > 0) {
+          setAllProducts([]);
+        }
+        return;
+      }
+
+      try {
+        // 只有在没有数据时才显示加载状态
+        if (allProducts.length === 0) {
+          startLoading('isInitialLoading');
+        }
+        
+        const products = await fetchProducts();
+        if (isMounted && products.length > 0) {
+          setAllProducts(products);
+        }
+      } catch (err) {
+        if (isMounted) {
+          handleError(err);
+        }
+      } finally {
+        if (isMounted) {
+          stopLoading('isInitialLoading');
+        }
+      }
     };
-  }, [fetchAllProducts, allProducts.length]);
 
-  // 监听分类变化
-  React.useEffect(() => {
-    console.log('[ProductsContext] 分类变化:', selectedCategory);
-  }, [selectedCategory]);
+    loadProducts();
 
-  // 初始加载和刷新方法
-  const refreshProducts = useCallback(async () => {
-    await fetchAllProducts(true);
-  }, [fetchAllProducts]);
-
-  // 缓存失效方法
-  const invalidateCache = useCallback(() => {
-    setLastFetchTime(0);
-  }, []);
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated]);
 
   const value = React.useMemo(() => ({
     products: allProducts,
     filteredProducts,
     isLoading,
+    isInitialLoading,
+    isRefreshing,
+    isFetching,
     error,
-    selectedCategory,
-    setSelectedCategory,
+    clearError,
+    filterOptions,
+    setFilterOptions,
     refreshProducts,
-    invalidateCache
+    invalidateCache,
+    cacheStatus: getCacheStatus(),
+    ...stats
   }), [
     allProducts,
     filteredProducts,
     isLoading,
+    isInitialLoading,
+    isRefreshing,
+    isFetching,
     error,
-    selectedCategory,
+    clearError,
+    filterOptions,
+    setFilterOptions,
     refreshProducts,
-    invalidateCache
+    invalidateCache,
+    getCacheStatus,
+    stats
   ]);
 
   return (

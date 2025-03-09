@@ -4,7 +4,6 @@ import { Platform, StyleSheet, View, ActivityIndicator, TouchableOpacity } from 
 import { useColorScheme } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
 
@@ -36,7 +35,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      initialRouteName="vanity-table"
+      initialRouteName="vanity"
       screenOptions={{
         tabBarActiveTintColor: '#FF6B6B',
         tabBarInactiveTintColor: '#999999',
@@ -73,7 +72,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="vanity-table"
+        name="vanity"
         options={{
           title: '美妆桌',
           tabBarIcon: () => null,
