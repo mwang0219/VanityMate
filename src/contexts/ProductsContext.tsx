@@ -5,6 +5,7 @@ import { useProductData } from '@/hooks/products/useProductData';
 import { useProductFilter } from '@/hooks/products/useProductFilter';
 import { useProductStats, ProductStats } from '@/hooks/products/useProductStats';
 import { useProductState, ProductLoadingState, ProductError } from '@/hooks/products/useProductState';
+import { ProductFilterOptions } from '@/utils/products/filters';
 
 interface ProductsContextValue extends ProductStats {
   // 数据状态
@@ -21,9 +22,17 @@ interface ProductsContextValue extends ProductStats {
   error: ProductError | null;
   clearError: () => void;
   
-  // 分类状态
-  selectedCategory: ProductCategory | 'MAKEUP' | null;
-  setSelectedCategory: (category: ProductCategory | 'MAKEUP' | null) => void;
+  // 过滤状态
+  filterOptions: ProductFilterOptions;
+  setFilterOptions: (options: Partial<ProductFilterOptions>) => void;
+  
+  // 缓存状态
+  cacheStatus: {
+    exists: boolean;
+    isValid: boolean;
+    isExpired: boolean;
+    age: number;
+  };
   
   // 操作方法
   refreshProducts: () => Promise<void>;
@@ -39,7 +48,13 @@ interface ProductsProviderProps {
 
 export function ProductsProvider({ children, initialCategory = null }: ProductsProviderProps) {
   // 状态管理
-  const [selectedCategory, setSelectedCategory] = React.useState<ProductCategory | 'MAKEUP' | null>(initialCategory);
+  const [filterOptions, setFilterOptionsState] = React.useState<ProductFilterOptions>({
+    category: initialCategory,
+    searchQuery: '',
+    isExpired: false,
+    isExpiring: false,
+    status: undefined
+  });
   const [allProducts, setAllProducts] = React.useState<UserProduct[]>([]);
   
   // 使用状态管理 hook
@@ -56,13 +71,19 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
   } = useProductState();
 
   // 使用其他 hooks
-  const { fetchProducts, invalidateCache, isAuthenticated } = useProductData();
+  const { fetchProducts, invalidateCache, getCacheStatus, isAuthenticated } = useProductData();
 
-  const { filteredProducts } = useProductFilter(allProducts, { 
-    category: selectedCategory 
-  });
+  const { filteredProducts } = useProductFilter(allProducts, filterOptions);
 
   const stats = useProductStats(allProducts, filteredProducts);
+
+  // 更新过滤选项
+  const setFilterOptions = useCallback((options: Partial<ProductFilterOptions>) => {
+    setFilterOptionsState(prev => ({
+      ...prev,
+      ...options
+    }));
+  }, []);
 
   // 获取所有产品
   const refreshProducts = useCallback(async () => {
@@ -70,7 +91,7 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
 
     try {
       startLoading('isRefreshing');
-      const products = await fetchProducts(true);
+      const products = await fetchProducts({ skipCache: true });
       setAllProducts(products);
     } catch (err) {
       handleError(err);
@@ -118,18 +139,7 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
     return () => {
       isMounted = false;
     };
-  }, [isAuthenticated]); // 只在认证状态改变时重新加载
-
-  // 监听 fetchProducts 的变化
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchProducts().then(products => {
-        setAllProducts(products);
-      }).catch(() => {
-        // 忽略错误，因为主要的错误处理在上面的 effect 中
-      });
-    }
-  }, [fetchProducts]);
+  }, [isAuthenticated]);
 
   const value = React.useMemo(() => ({
     products: allProducts,
@@ -140,10 +150,11 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
     isFetching,
     error,
     clearError,
-    selectedCategory,
-    setSelectedCategory,
+    filterOptions,
+    setFilterOptions,
     refreshProducts,
     invalidateCache,
+    cacheStatus: getCacheStatus(),
     ...stats
   }), [
     allProducts,
@@ -154,9 +165,11 @@ export function ProductsProvider({ children, initialCategory = null }: ProductsP
     isFetching,
     error,
     clearError,
-    selectedCategory,
+    filterOptions,
+    setFilterOptions,
     refreshProducts,
     invalidateCache,
+    getCacheStatus,
     stats
   ]);
 
