@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import React, { forwardRef } from 'react';
+import { Animated, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Swipeable, GestureHandlerRootView } from 'react-native-gesture-handler';
 
 interface SwipeableRowProps {
@@ -14,9 +14,7 @@ export interface SwipeAction {
   textColor?: string;
 }
 
-export function SwipeableRow({ children, rightActions }: SwipeableRowProps) {
-  const swipeableRef = useRef<Swipeable>(null);
-
+const SwipeableRowComponent = forwardRef<Swipeable, SwipeableRowProps>(({ children, rightActions }, ref) => {
   const renderRightActions = (
     _progress: Animated.AnimatedInterpolation<number>,
     dragX: Animated.AnimatedInterpolation<number>
@@ -31,53 +29,81 @@ export function SwipeableRow({ children, rightActions }: SwipeableRowProps) {
     return (
       <View style={styles.rightActionsContainer}>
         {rightActions.map((action, index) => (
-          <Animated.View
+          <TouchableOpacity
             key={index}
-            style={[
-              styles.rightActionButton,
-              {
-                backgroundColor: action.backgroundColor,
-                transform: [{ translateX: trans }],
-              },
-            ]}
+            style={{ flex: 1 }}
+            onPress={action.onPress}
           >
-            <Animated.Text
+            <Animated.View
               style={[
-                styles.actionText,
-                { color: action.textColor || '#fff' },
+                styles.rightActionButton,
+                {
+                  backgroundColor: action.backgroundColor,
+                  transform: [{ translateX: trans }],
+                },
               ]}
-              onPress={() => {
-                action.onPress();
-                swipeableRef.current?.close();
-              }}
             >
-              {action.text}
-            </Animated.Text>
-          </Animated.View>
+              <Animated.Text
+                style={[
+                  styles.actionText,
+                  { color: action.textColor || '#fff' },
+                ]}
+              >
+                {action.text}
+              </Animated.Text>
+            </Animated.View>
+          </TouchableOpacity>
         ))}
       </View>
     );
   };
 
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={styles.container}>
       <Swipeable
-        ref={swipeableRef}
+        ref={ref}
         friction={2}
         enableTrackpadTwoFingerGesture
         rightThreshold={40}
         renderRightActions={renderRightActions}
+        containerStyle={styles.swipeableContainer}
       >
-        {children}
+        <View style={styles.cardContainer}>
+          {children}
+        </View>
       </Swipeable>
     </GestureHandlerRootView>
   );
-}
+});
+
+SwipeableRowComponent.displayName = 'SwipeableRow';
+
+export const SwipeableRow = SwipeableRowComponent;
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+  },
+  swipeableContainer: {
+    backgroundColor: 'transparent',
+  },
+  cardContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, // Android 阴影
+    marginVertical: 6, // 添加垂直间距
+  },
   rightActionsContainer: {
     width: 80,
     flexDirection: 'row',
+    marginRight: 10,
   },
   rightActionButton: {
     flex: 1,
