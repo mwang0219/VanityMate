@@ -29,13 +29,6 @@ export function ProductCard({
     return null;
   }
 
-  const lastUsedText = userProduct.last_used_at
-    ? `上次使用: ${formatDistanceToNow(new Date(userProduct.last_used_at), { 
-        addSuffix: true,
-        locale: zhCN,
-      })}`
-    : '尚未使用';
-
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <BlurView
@@ -62,9 +55,6 @@ export function ProductCard({
             )}
           </View>
           <ThemedText style={styles.name}>{product.name}</ThemedText>
-          {showLastUsed && (
-            <ThemedText style={styles.lastUsed}>{lastUsedText}</ThemedText>
-          )}
           {userProduct.expiry_date && (
             <View style={styles.expirationContainer}>
               <FontAwesome name="clock-o" size={14} color="#FF6B6B" />

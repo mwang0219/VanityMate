@@ -1,4 +1,4 @@
-import { UserProduct } from '@/lib/supabase/types';
+import { UserProduct } from '@/types/products';
 import { ProductCategory } from '@/types/products';
 
 export interface ProductFilterOptions {

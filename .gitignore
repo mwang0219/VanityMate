@@ -40,3 +40,4 @@ app-example
 .env.local
 .env.development
 .env.production
+package-lock.json
