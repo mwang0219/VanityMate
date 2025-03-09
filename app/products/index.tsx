@@ -1,7 +1,6 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 import { ProductList } from '@/components/products/ProductList';
-import { ProductsProvider } from '@/contexts/ProductsContext';
 import { useLocalSearchParams } from 'expo-router';
 import { ProductCategory } from '@/types/products';
 
@@ -16,9 +15,7 @@ export default function ProductsScreen() {
           headerShadowVisible: false,
         }}
       />
-      <ProductsProvider initialCategory={category}>
-        <ProductList />
-      </ProductsProvider>
+      <ProductList />
     </>
   );
 } 

@@ -4,7 +4,6 @@ import { Platform, StyleSheet, View, ActivityIndicator, TouchableOpacity } from 
 import { useColorScheme } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { MaterialIcons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
 
