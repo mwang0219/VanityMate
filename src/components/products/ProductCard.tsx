@@ -21,12 +21,6 @@ export function ProductCard({
   onFavoritePress,
   showLastUsed = false,
 }: ProductCardProps) {
-  console.log('[ProductCard] Rendering with userProduct:', {
-    id: userProduct?.id,
-    product_id: userProduct?.product_id,
-    hasProduct: !!userProduct?.product
-  });
-
   const colorScheme = useColorScheme();
   const { product } = userProduct;
 

@@ -7,13 +7,14 @@ import { router } from 'expo-router';
 import { UserProduct } from '@/types/products';
 
 export function ProductList() {
-  const { products, isLoading, error, selectedCategory } = useProducts();
+  const { filteredProducts: products, isLoading, error, selectedCategory, refreshProducts } = useProducts();
   const [refreshing, setRefreshing] = React.useState(false);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
+    await refreshProducts();
+    setRefreshing(false);
+  }, [refreshProducts]);
 
   const handleProductPress = useCallback((productId: string) => {
     router.push(`/product/${productId}`);
@@ -39,7 +40,7 @@ export function ProductList() {
     return (
       <View style={styles.centerContainer}>
         <ThemedText style={styles.emptyText}>
-          暂无产品，快去添加吧！
+          {selectedCategory ? '该分类下暂无产品' : '暂无产品，快去添加吧！'}
         </ThemedText>
       </View>
     );
